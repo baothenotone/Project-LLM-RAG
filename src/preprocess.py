@@ -1,149 +1,93 @@
+from pathlib import Path
 import json
 import re
-from pathlib import Path
 
+#Đọc dữ liệu pages.json
+def load_pages() -> list[dict]:
+    input_file_path = "data/processed/pages.json"
+    input_path = Path(input_file_path)
 
-INPUT_FILE = Path("data/processed/pages.json")
-CLEANED_FILE = Path("data/processed/cleaned_pages.json")
-CHUNKS_FILE = Path("data/chunks/chunks.json")
+    with open(input_path, "r", encoding="utf-8") as file:
+        pages = json.load(file)
+    return pages
 
-CHUNK_SIZE = 180
-OVERLAP = 30
-MIN_TEXT_LENGTH = 30
+#Làm sạch 
+def clean_text(text: str) -> str:
 
+    text = text.replace("\t"," ")
+    text = re.sub(r"\n+", "\n",text)
+    text = re.sub(r"[ ]+", " ", text)
 
-def read_json(file_path):
-    if not file_path.exists():
-        raise FileNotFoundError(f"Không tìm thấy file: {file_path}")
+    text = text.strip()
+    return text
 
-    with open(file_path, "r", encoding="utf-8") as file:
-        return json.load(file)
+#Chia thành nhiều chunk
+def split_text_into_chunk(text: str, chunk_size: int = 1000, overlap: int = 200) -> list[str]:
+    chunks = []
 
-
-def write_json(data, file_path):
-    file_path.parent.mkdir(parents=True, exist_ok=True)
-
-    with open(file_path, "w", encoding="utf-8") as file:
-        json.dump(data, file, ensure_ascii=False, indent=2)
-
-
-def clean_text(text):
     if not text:
-        return ""
+        return chunks
+    start_index = 0
+    while start_index < len(text):
+        end_index = start_index + chunk_size 
 
-    text = text.replace("\r\n", "\n").replace("\r", "\n")
-    lines = text.split("\n")
+        chunk_text = text[start_index:end_index].strip()
 
-    cleaned_lines = []
+        if chunk_text != "":
+            chunks.append(chunk_text)
 
-    for index, line in enumerate(lines):
-        line = line.strip()
-
-        if line == "":
-            continue
-
-        # Một số PDF có số trang đứng riêng ở dòng đầu, bỏ để tránh nhiễu khi truy xuất.
-        if index == 0 and line.isdigit():
-            continue
-
-        # Bỏ các dòng/dãy chấm dài thường xuất hiện trong biểu mẫu PDF.
-        line = re.sub(r"\.{5,}", " ", line)
-        line = re.sub(r"\s+", " ", line)
-
-        cleaned_lines.append(line)
-
-    cleaned_text = " ".join(cleaned_lines)
-    cleaned_text = re.sub(r"\s+", " ", cleaned_text).strip()
-
-    return cleaned_text
-
-
-def clean_all_pages(pages):
-    cleaned_pages = []
+        start_index = end_index - overlap 
+    return chunks
+#Tạo danh sách chunk 
+def build_chunks(pages: list[dict], chunk_size: int=1000, overlap: int=200) -> list[dict]:
+    all_chunks = []
 
     for page in pages:
-        text = clean_text(page.get("text", ""))
+        doc_id = page["doc_id"]
+        file_name = page["file_name"]
+        page_number = page["page"]
+        source = page["source"]
 
-        if len(text) < MIN_TEXT_LENGTH:
-            continue
+        #Làm sạch text của từng trang
+        cleaned_text = clean_text(page["text"])
 
-        cleaned_page = {
-            "doc_id": page.get("doc_id", ""),
-            "file_name": page.get("file_name", ""),
-            "page": page.get("page", ""),
-            "text": text,
-            "source": page.get("source", ""),
-        }
+        #Chia text của trang thành nhiều chunk
+        chunks_in_page = split_text_into_chunk(text=cleaned_text, chunk_size=chunk_size, overlap=overlap)
 
-        cleaned_pages.append(cleaned_page)
+        for chunk_index, chunk_text in enumerate(chunks_in_page):
 
-    return cleaned_pages
+            chunk_number = chunk_index + 1
+            chunk_id = f"{doc_id}_PAGE{page_number:03d}_CHUNK{chunk_number:03d}"
 
-
-def split_text_to_chunks(text, chunk_size=CHUNK_SIZE, overlap=OVERLAP):
-    words = text.split()
-
-    if len(words) <= chunk_size:
-        return [text]
-
-    chunks = []
-    start = 0
-
-    while start < len(words):
-        end = start + chunk_size
-        chunk_words = words[start:end]
-        chunk_text = " ".join(chunk_words)
-        chunks.append(chunk_text)
-
-        if end >= len(words):
-            break
-
-        # Lùi lại một đoạn nhỏ để chunk sau vẫn giữ được ngữ cảnh của chunk trước.
-        start = end - overlap
-
-    return chunks
-
-
-def create_chunks(cleaned_pages):
-    chunks = []
-
-    for page in cleaned_pages:
-        page_chunks = split_text_to_chunks(page["text"])
-
-        for chunk_number, chunk_text in enumerate(page_chunks, start=1):
-            chunk_id = f"{page['doc_id']}_p{page['page']}_c{chunk_number}"
-
-            chunk = {
+            chunk_data = {
                 "chunk_id": chunk_id,
-                "doc_id": page["doc_id"],
-                "file_name": page["file_name"],
-                "page": page["page"],
+                "doc_id": doc_id,
+                "file_name": file_name,
+                "page": page_number,
                 "chunk_index": chunk_number,
                 "text": chunk_text,
-                "source": page["source"],
+                "source": source
             }
+            all_chunks.append(chunk_data)
+    return all_chunks
 
-            chunks.append(chunk)
+def save_chunks(chunks: list[dict]):
+    output_file_path = "data/chunks/chunks.json"
+    output_path = Path(output_file_path)
 
-    return chunks
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
+    with open(output_path, "w", encoding="utf-8") as file:
+        json.dump(chunks, file, ensure_ascii=False, indent=2)
 
 def main():
-    print("Bắt đầu Week 3: làm sạch text và chia chunk...")
+    pages = load_pages()
 
-    pages = read_json(INPUT_FILE)
-    cleaned_pages = clean_all_pages(pages)
-    chunks = create_chunks(cleaned_pages)
+    chunks = build_chunks(pages=pages, chunk_size=1000, overlap=200)
 
-    write_json(cleaned_pages, CLEANED_FILE)
-    write_json(chunks, CHUNKS_FILE)
-
-    print(f"Số trang ban đầu: {len(pages)}")
-    print(f"Số trang sau khi làm sạch: {len(cleaned_pages)}")
-    print(f"Số chunk đã tạo: {len(chunks)}")
-    print(f"Đã lưu file: {CLEANED_FILE}")
-    print(f"Đã lưu file: {CHUNKS_FILE}")
-
+    save_chunks(chunks)
+    print(f"Tổng số trang đầu vào: {len(pages)}")
+    print(f"Tổng số chunk đã tạo: {len(chunks)}")
 
 if __name__ == "__main__":
     main()

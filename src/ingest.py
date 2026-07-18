@@ -67,6 +67,5 @@ def main():
 
     print("Đã đọc", len(pages), "trang")
 
-
 if __name__ == "__main__":
     main()
