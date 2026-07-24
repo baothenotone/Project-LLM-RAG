@@ -8,13 +8,13 @@ import unicodedata
 from pathlib import Path
 from typing import Any
 
+from docling.backend.pypdfium2_backend import PyPdfiumDocumentBackend
 from docling.chunking import HybridChunker
+from docling.datamodel.accelerator_options import AcceleratorDevice,AcceleratorOptions
 from docling.datamodel.base_models import InputFormat
-from docling.datamodel.pipeline_options import PdfPipelineOptions, TableFormerMode
+from docling.datamodel.pipeline_options import PdfPipelineOptions,TableFormerMode
 from docling.document_converter import DocumentConverter, PdfFormatOption
-from docling_core.transforms.chunker.tokenizer.huggingface import (
-    HuggingFaceTokenizer,
-)
+from docling_core.transforms.chunker.tokenizer.huggingface import HuggingFaceTokenizer
 from transformers import AutoTokenizer
 
 
@@ -44,7 +44,7 @@ EMBEDDING_MODEL = (
 MAX_CHUNK_TOKENS = 120
 
 # Chạy thử một file trước. Khi kết quả ổn, đổi thành None để xử lý tất cả.
-MAX_FILES: int | None = 1
+MAX_FILES: int | None = None
 
 # PDF HUSC chủ yếu là PDF text nên mặc định chưa bật OCR để chạy nhanh hơn.
 # Nếu file bị scan hoặc copy ra toàn ký tự lỗi, đổi ENABLE_OCR thành True.
@@ -363,29 +363,30 @@ def build_chunk_records(
 # ==========================================================
 
 
+# Tạo converter có xử lý bảng và giảm sử dụng bộ nhớ.
 def create_converter() -> DocumentConverter:
-    """Khởi tạo DocumentConverter một lần cho toàn bộ thư mục PDF."""
+    pipeline_options = PdfPipelineOptions(do_ocr=ENABLE_OCR,do_table_structure=True,)
 
-    pipeline_options = PdfPipelineOptions(
-        do_ocr=ENABLE_OCR,
-        do_table_structure=True,
-    )
+    pipeline_options.table_structure_options.mode = TableFormerMode.FAST
+    pipeline_options.table_structure_options.do_cell_matching = True
 
-    # Chế độ ACCURATE chạy chậm hơn FAST nhưng phù hợp hơn với sổ tay học vụ
-    # có nhiều bảng. Với tài liệu chỉ có chữ, chênh lệch không đáng kể.
-    pipeline_options.table_structure_options.mode = TableFormerMode.ACCURATE
+    pipeline_options.layout_batch_size = 1
+    pipeline_options.table_batch_size = 1
+    pipeline_options.ocr_batch_size = 1
+    pipeline_options.queue_max_size = 4
+
+    pipeline_options.generate_page_images = False
+    pipeline_options.generate_picture_images = False
+    pipeline_options.generate_parsed_pages = False
+
+    pipeline_options.accelerator_options = AcceleratorOptions(num_threads=2,device=AcceleratorDevice.CPU,)
 
     if ENABLE_OCR and FORCE_FULL_PAGE_OCR:
         pipeline_options.ocr_options.force_full_page_ocr = True
 
-    return DocumentConverter(
-        format_options={
-            InputFormat.PDF: PdfFormatOption(
-                pipeline_options=pipeline_options,
-            )
-        }
-    )
+    pdf_option = PdfFormatOption(pipeline_options=pipeline_options,backend=PyPdfiumDocumentBackend,)
 
+    return DocumentConverter(allowed_formats=[InputFormat.PDF],format_options={InputFormat.PDF:pdf_option},)
 
 def create_chunker() -> HybridChunker:
     """Tạo HybridChunker dùng đúng tokenizer của embedding model."""

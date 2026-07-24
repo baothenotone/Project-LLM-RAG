@@ -9,6 +9,6 @@ embeddings = np.load(EMBEDDINGS_FILE)
 
 df = pd.DataFrame(embeddings)
 
-df.head(20).to_csv(OUTPUT_FILE, index=False, encoding="utf-8-sig")
+df.head(100).to_csv(OUTPUT_FILE, index=False, encoding="utf-8-sig")
 
 print("Đã lưu file xem thử tại:", OUTPUT_FILE)
