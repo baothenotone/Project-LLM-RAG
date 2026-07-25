@@ -1,4 +1,7 @@
-from pathlib import Path
+from __future__ import annotations
+
+import gc
+import hashlib
 import json
 import re
 import unicodedata
@@ -28,9 +31,7 @@ class LegalDocumentPreprocessor:
         self.preview_file = self.reports_dir / "chunks_preview.txt"
 
         # 2. CẤU HÌNH MODEL & CHUNKING
-        # Đã đồng bộ với model tiếng Việt của toàn hệ thống
         self.embedding_model = "bkai-foundation-models/vietnamese-bi-encoder"
-        # Tăng token lên 256 để giữ trọn vẹn ngữ cảnh của các "Điều", "Khoản"
         self.max_chunk_tokens = 256 
         
         self.enable_ocr = False
@@ -44,13 +45,11 @@ class LegalDocumentPreprocessor:
         self.chunker = self._create_chunker()
 
     def _setup_directories(self):
-        """Tạo các thư mục cần thiết nếu chưa có."""
         for folder in [self.raw_dir, self.extracted_dir, self.chunks_dir, self.reports_dir]:
             folder.mkdir(parents=True, exist_ok=True)
 
     @staticmethod
     def clean_text(text: str) -> str:
-        """Làm sạch những lỗi định dạng phổ biến nhưng không tự sửa nội dung."""
         if not text:
             return ""
         text = unicodedata.normalize("NFC", text)
