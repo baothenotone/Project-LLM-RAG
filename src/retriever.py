@@ -107,4 +107,83 @@ class HybridRetriever:
             item["score"] = float(best_scores[candidate_indices.index(idx)]) if self.reranker else float(ranked_items[i][1])
             results.append(item)
             
-        return results
+        return results 
+    # Hiển thị kết quả truy xuất.
+def print_results(results):
+    if not results:
+        print("Không tìm thấy kết quả phù hợp.")
+        return
+
+    for rank, item in enumerate(results, start=1):
+        content = (
+            item.get("content")
+            or item.get("text")
+            or item.get("embedding_text")
+            or ""
+        )
+
+        source_file = (
+            item.get("source_file")
+            or item.get("file_name")
+            or "Không xác định"
+        )
+
+        pages = (
+            item.get("pages")
+            or item.get("page")
+            or "Không xác định"
+        )
+
+        print("\n" + "=" * 80)
+        print("TOP:", rank)
+        print("Score:", f"{item.get('score', 0):.4f}")
+        print("File:", source_file)
+        print("Trang:", pages)
+        print("Chunk ID:", item.get("chunk_id", ""))
+        print("Nội dung:")
+        print(content)
+
+
+# Chạy thử hệ thống truy xuất.
+def main():
+    try:
+        retriever = HybridRetriever()
+    except Exception as error:
+        print("Không thể khởi tạo hệ thống:")
+        print(error)
+        return
+
+    print("\nHệ thống Retrieval đã sẵn sàng.")
+    print("Nhập 'exit' để kết thúc.\n")
+
+    while True:
+        try:
+            question = input("Nhập câu hỏi: ").strip()
+
+            if question.lower() == "exit":
+                print("Đã kết thúc.")
+                break
+
+            if not question:
+                print("Câu hỏi không được để trống.\n")
+                continue
+
+            results = retriever.retrieve(
+                question=question,
+                top_k=5,
+            )
+
+            print_results(results)
+            print()
+
+        except KeyboardInterrupt:
+            print("\nĐã kết thúc.")
+            break
+
+        except Exception as error:
+            print("Lỗi khi truy xuất:", error)
+            print()
+
+
+if __name__ == "__main__":
+    main()
