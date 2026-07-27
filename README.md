@@ -82,7 +82,6 @@ Project-LLM-RAG/
 │   ├── rag_pipeline.py        # Truy xuất và sinh câu trả lời
 │   ├── app.py                 # Giao diện Streamlit
 │   └── ingest.py              # Bộ đọc PDF PyMuPDF phiên bản cơ bản
-├── notebooks/                 # Notebook theo các giai đoạn thử nghiệm
 ├── requirements.txt
 └── README.md
 ```
