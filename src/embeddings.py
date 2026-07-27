@@ -13,8 +13,8 @@ EMBEDDINGS_FILE = VECTOR_FOLDER / "embeddings.npy"
 METADATA_FILE = VECTOR_FOLDER / "metadata.json"
 
 
-# Mô hình dùng để embedding văn bản tiếng Việt
-MODEL_NAME = ("sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
+# Mô hình dùng để embedding văn bản tiếng Việt (ĐÃ SỬA)
+MODEL_NAME = "bkai-foundation-models/vietnamese-bi-encoder"
 
 # Đọc danh sách chunk
 def load_chunks():
@@ -66,7 +66,6 @@ def load_embedding_model():
     return model
 
 
-# Lấy phần text trong từng chunk
 # Lấy phần embedding_text trong từng chunk
 def get_chunk_texts(chunks):
     texts = []
@@ -98,7 +97,6 @@ def create_query_embedding(model, query):
     return query_embedding
 
 
-# Tạo metadata tương ứng với từng vector embedding
 # Tạo metadata tương ứng với từng vector embedding
 def create_metadata(chunks):
     metadata_list = []

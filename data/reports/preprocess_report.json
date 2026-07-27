@@ -1,77 +1,22 @@
 {
-  "embedding_model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
-  "max_chunk_tokens": 120,
+  "embedding_model": "bkai-foundation-models/vietnamese-bi-encoder",
+  "max_chunk_tokens": 256,
   "ocr_enabled": false,
-  "processed_file_count": 6,
-  "successful_file_count": 6,
+  "processed_file_count": 1,
+  "successful_file_count": 1,
   "failed_file_count": 0,
-  "total_chunks": 4527,
+  "total_chunks": 144,
   "files": [
     {
       "source_file": "01_quy_che_dao_tao_husc_qd_673_2021.pdf",
       "status": "success",
       "pdf_page_count": 40,
       "markdown_file": "data\\extracted\\01_quy_che_dao_tao_husc_qd_673_2021.md",
-      "kept_chunks": 290,
+      "kept_chunks": 144,
       "skipped_short_or_noise": 1,
       "skipped_duplicate": 0,
       "chunks_without_page_number": 0,
-      "suspicious_chunks": 0
-    },
-    {
-      "source_file": "02_so_tay_hoc_vu_hk1_2025_2026.pdf",
-      "status": "success",
-      "pdf_page_count": 140,
-      "markdown_file": "data\\extracted\\02_so_tay_hoc_vu_hk1_2025_2026.md",
-      "kept_chunks": 2134,
-      "skipped_short_or_noise": 23,
-      "skipped_duplicate": 0,
-      "chunks_without_page_number": 0,
-      "suspicious_chunks": 0
-    },
-    {
-      "source_file": "03_so_tay_hoc_vu_hk2_2025_2026.pdf",
-      "status": "success",
-      "pdf_page_count": 91,
-      "markdown_file": "data\\extracted\\03_so_tay_hoc_vu_hk2_2025_2026.md",
-      "kept_chunks": 1293,
-      "skipped_short_or_noise": 11,
-      "skipped_duplicate": 0,
-      "chunks_without_page_number": 0,
-      "suspicious_chunks": 0
-    },
-    {
-      "source_file": "04_quy_dinh_dao_tao_song_nganh_dh_hue_2023.pdf",
-      "status": "success",
-      "pdf_page_count": 13,
-      "markdown_file": "data\\extracted\\04_quy_dinh_dao_tao_song_nganh_dh_hue_2023.md",
-      "kept_chunks": 121,
-      "skipped_short_or_noise": 2,
-      "skipped_duplicate": 0,
-      "chunks_without_page_number": 0,
-      "suspicious_chunks": 0
-    },
-    {
-      "source_file": "05_thong_tu_08_2021_quy_che_dao_tao_dai_hoc.pdf",
-      "status": "success",
-      "pdf_page_count": 25,
-      "markdown_file": "data\\extracted\\05_thong_tu_08_2021_quy_che_dao_tao_dai_hoc.md",
-      "kept_chunks": 128,
-      "skipped_short_or_noise": 2,
-      "skipped_duplicate": 0,
-      "chunks_without_page_number": 0,
-      "suspicious_chunks": 0
-    },
-    {
-      "source_file": "10_so_tay_ctdt_cntt.pdf",
-      "status": "success",
-      "pdf_page_count": 44,
-      "markdown_file": "data\\extracted\\10_so_tay_ctdt_cntt.md",
-      "kept_chunks": 561,
-      "skipped_short_or_noise": 19,
-      "skipped_duplicate": 0,
-      "chunks_without_page_number": 0,
-      "suspicious_chunks": 0
+      "suspicious_chunks": 144
     }
   ]
 }

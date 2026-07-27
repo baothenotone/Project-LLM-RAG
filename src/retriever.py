@@ -1,224 +1,110 @@
-from functools import lru_cache
-from pathlib import Path
 import json
+import os
+import re
+import unicodedata
 import numpy as np
-from sentence_transformers import SentenceTransformer
+from pathlib import Path
+from dotenv import load_dotenv
+from rank_bm25 import BM25Okapi
+from sentence_transformers import CrossEncoder, SentenceTransformer
+from query_expansion import QueryExpander
 
+class HybridRetriever:
+    def __init__(self):
+        self.root = Path(__file__).resolve().parent.parent
+        load_dotenv(self.root / ".env")
+        
+        self.embeddings_file = self.root / "vector_store" / "embeddings.npy"
+        self.metadata_file = self.root / "vector_store" / "metadata.json"
+        
+        # Mô hình chuẩn tiếng Việt
+        self.embed_model_name = "bkai-foundation-models/vietnamese-bi-encoder"
+        self.reranker_name = os.getenv("RERANKER_MODEL", "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1")
+        self.enable_reranker = os.getenv("ENABLE_RERANKER", "true").lower() in {"true", "1"}
+        
+        self.pool_size = 50
+        self.rrf_k = 60
+        self.expander = QueryExpander()
+        
+        print("Đang khởi tạo hệ thống Retrieval...")
+        self._load_data()
+        self._load_models()
+        print("Hoàn tất khởi tạo!")
 
-# Đường dẫn đến vector store.
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+    def _load_data(self):
+        if not self.embeddings_file.exists() or not self.metadata_file.exists():
+            raise FileNotFoundError("Không tìm thấy database. Hãy chạy lại embeddings.py trước.")
+            
+        with open(self.metadata_file, "r", encoding="utf-8") as f:
+            self.metadata = json.load(f)
+            
+        emb = np.load(self.embeddings_file)
+        norms = np.linalg.norm(emb, axis=1, keepdims=True)
+        self.embeddings = emb / norms
+        
+        self.search_texts = [self._build_search_text(m) for m in self.metadata]
+        self.bm25 = BM25Okapi([self._tokenize(t) for t in self.search_texts])
 
-VECTOR_FOLDER = PROJECT_ROOT / "vector_store"
-EMBEDDINGS_FILE = VECTOR_FOLDER / "embeddings.npy"
-METADATA_FILE = VECTOR_FOLDER / "metadata.json"
+    def _load_models(self):
+        self.embed_model = SentenceTransformer(self.embed_model_name)
+        self.reranker = CrossEncoder(self.reranker_name) if self.enable_reranker else None
 
+    def _normalize(self, text):
+        text = unicodedata.normalize("NFC", str(text or "")).lower()
+        return re.sub(r"[^\w]+", " ", text, flags=re.UNICODE).strip()
 
-# Mô hình dùng để embedding tài liệu và câu hỏi.
-MODEL_NAME = (
-    "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-)
+    def _tokenize(self, text):
+        return self._normalize(text).split()
 
+    def _build_search_text(self, item):
+        content = str(item.get("content") or item.get("embedding_text") or "").strip()
+        fields = [item.get("document_title"), item.get("headings"), content]
+        return "\n".join([str(f) for f in fields if f])
 
-# Đọc embeddings đã tạo.
-@lru_cache(maxsize=1)
-def load_embeddings():
-    if not EMBEDDINGS_FILE.exists():
-        raise FileNotFoundError(
-            f"Không tìm thấy file: {EMBEDDINGS_FILE}"
-        )
+    def _rrf(self, ranked_lists):
+        fused = {}
+        for ranked_indices in ranked_lists:
+            for rank, idx in enumerate(ranked_indices, 1):
+                fused[int(idx)] = fused.get(int(idx), 0.0) + 1.0 / (self.rrf_k + rank)
+        return sorted(fused.items(), key=lambda x: x[1], reverse=True)
 
-    embeddings = np.load(EMBEDDINGS_FILE, allow_pickle=False)
+    def retrieve(self, question, top_k=5):
+        # 1. Expand query và tự động viết hoa chữ cái đầu
+        question = question.strip()
+        question = question[0].upper() + question[1:] if question else ""
+        query_variants = self.expander.expand(question)
+        
+        if not query_variants:
+            return []
 
-    if embeddings.ndim != 2:
-        raise ValueError(
-            f"Embeddings phải là ma trận 2 chiều: {embeddings.shape}"
-        )
+        # 2. Dense Search
+        q_embs = self.embed_model.encode(list(query_variants), convert_to_numpy=True, normalize_embeddings=True)
+        if q_embs.ndim == 1: q_embs = q_embs.reshape(1, -1)
+        
+        dense_scores = np.max(self.embeddings @ q_embs.T, axis=1)
+        dense_indices = np.argsort(dense_scores)[::-1][:self.pool_size]
 
-    embeddings = embeddings.astype(np.float32, copy=False)
+        # 3. Sparse Search (BM25)
+        bm25_matrix = np.vstack([self.bm25.get_scores(self._tokenize(q)) for q in query_variants]).T
+        bm25_scores = np.max(bm25_matrix, axis=1)
+        bm25_indices = np.argsort(bm25_scores)[::-1][:self.pool_size]
 
-    print("Đã đọc embeddings:", embeddings.shape)
+        # 4. RRF
+        ranked_items = self._rrf([dense_indices, bm25_indices])
+        candidate_indices = [idx for idx, _ in ranked_items[:60]]
 
-    return embeddings
+        # 5. Reranker
+        if self.reranker:
+            pairs = [(q, self.search_texts[i]) for i in candidate_indices for q in query_variants]
+            scores = self.reranker.predict(pairs).reshape(len(candidate_indices), len(query_variants))
+            best_scores = np.max(scores, axis=1)
+            candidate_indices = sorted(candidate_indices, key=lambda i: best_scores[candidate_indices.index(i)], reverse=True)
 
-
-# Đọc metadata tương ứng với embeddings.
-@lru_cache(maxsize=1)
-def load_metadata():
-    if not METADATA_FILE.exists():
-        raise FileNotFoundError(
-            f"Không tìm thấy file: {METADATA_FILE}"
-        )
-
-    try:
-        with METADATA_FILE.open("r", encoding="utf-8") as file:
-            metadata = json.load(file)
-
-    except json.JSONDecodeError as error:
-        raise ValueError(
-            f"File metadata.json không hợp lệ: {error}"
-        ) from error
-
-    if not isinstance(metadata, list):
-        raise ValueError(
-            "Metadata phải được lưu dưới dạng danh sách."
-        )
-
-    print("Đã đọc metadata:", len(metadata))
-
-    return metadata
-
-
-# Tải mô hình đã dùng để embedding tài liệu.
-@lru_cache(maxsize=1)
-def load_embedding_model():
-    print("Đang tải mô hình embedding...")
-    print("Tên mô hình:", MODEL_NAME)
-
-    return SentenceTransformer(MODEL_NAME)
-
-
-# Tạo embedding cho câu hỏi.
-def embed_question(model, question):
-    question = question.strip()
-
-    if not question:
-        raise ValueError(
-            "Câu hỏi không được để trống."
-        )
-
-    question_embedding = model.encode(
-        question,
-        convert_to_numpy=True,
-        normalize_embeddings=True,
-        show_progress_bar=False,
-    )
-
-    return question_embedding.astype(np.float32, copy=False)
-
-
-# Kiểm tra embeddings và metadata có khớp nhau không.
-def check_vector_store(embeddings, metadata, question_embedding):
-    if len(embeddings) != len(metadata):
-        raise ValueError(
-            "Số embeddings và metadata không khớp: "
-            f"{len(embeddings)} embeddings, "
-            f"{len(metadata)} metadata"
-        )
-
-    if len(metadata) == 0:
-        raise ValueError(
-            "Vector store không có dữ liệu."
-        )
-
-    if embeddings.shape[1] != question_embedding.shape[0]:
-        raise ValueError(
-            "Số chiều embedding không khớp: "
-            f"{embeddings.shape[1]} và "
-            f"{question_embedding.shape[0]}"
-        )
-
-
-# Chuẩn hóa embeddings để tính cosine similarity.
-def normalize_embeddings(embeddings):
-    norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
-
-    if np.any(norms == 0):
-        raise ValueError(
-            "Vector store chứa embedding có độ dài bằng 0."
-        )
-
-    return embeddings / norms
-
-
-# Tìm các chunk có nội dung gần câu hỏi nhất.
-def retrieve(question, top_k=5):
-    if not isinstance(top_k, int):
-        raise TypeError(
-            "top_k phải là số nguyên."
-        )
-
-    if top_k <= 0:
-        raise ValueError(
-            "top_k phải lớn hơn 0."
-        )
-
-    embeddings = load_embeddings()
-    metadata = load_metadata()
-    model = load_embedding_model()
-
-    question_embedding = embed_question(model, question)
-
-    check_vector_store(
-        embeddings,
-        metadata,
-        question_embedding,
-    )
-
-    embeddings = normalize_embeddings(embeddings)
-
-    similarity_scores = embeddings @ question_embedding
-
-    top_k = min(top_k, len(metadata))
-
-    sorted_indices = np.argsort(similarity_scores)[::-1]
-    top_indices = sorted_indices[:top_k]
-
-    results = []
-
-    for index in top_indices:
-        index = int(index)
-
-        if not isinstance(metadata[index], dict):
-            raise ValueError(
-                "Mỗi phần tử metadata phải là một object."
-            )
-
-        item = metadata[index].copy()
-        item["score"] = float(similarity_scores[index])
-
-        results.append(item)
-
-    return results
-
-
-# Hiển thị kết quả truy xuất.
-def print_results(results):
-    if not results:
-        print("Không tìm thấy kết quả.")
-        return
-
-    for rank, item in enumerate(results, start=1):
-        print("=" * 80)
-        print("TOP:", rank)
-        print("Score:", round(item["score"], 4))
-        print("File:", item.get("file_name", ""))
-        print("Pages:", item.get("pages", []))
-        print("Chunk ID:", item.get("chunk_id", ""))
-        print("Text:")
-        print(item.get("content") or item.get("embedding_text") or "")
-
-
-# Chạy thử chức năng truy xuất.
-def main():
-    question = input("Nhập câu hỏi: ").strip()
-
-    if not question:
-        print("Câu hỏi không được để trống.")
-        return
-
-    try:
-        results = retrieve(question, top_k=5)
-        print_results(results)
-
-    except (
-        FileNotFoundError,
-        TypeError,
-        ValueError,
-        OSError,
-        RuntimeError,
-    ) as error:
-        print("Lỗi:", error)
-
-
-if __name__ == "__main__":
-    main()
+        # 6. Format kết quả
+        results = []
+        for i, idx in enumerate(candidate_indices[:top_k]):
+            item = self.metadata[idx].copy()
+            item["score"] = float(best_scores[candidate_indices.index(idx)]) if self.reranker else float(ranked_items[i][1])
+            results.append(item)
+            
+        return results

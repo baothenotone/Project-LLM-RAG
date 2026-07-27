@@ -16,10 +16,11 @@ Headings: ['QUYẾT ĐỊNH']
 Điều/Khoản: None / None
 --------------------------------------------------------------------------------
 QUYẾT ĐỊNH
-Ban hành Quy chế đào tạo đại học theo hệ thống tín chỉ của Trường Đại học Khoa học
+Ban hành Quy chế đào tạo đại học theo hệ thống tín chỉ
+của Trường Đại học Khoa học
 
 ================================================================================
-CHUNK 3: 01_quy_che_dao_tao_husc_qd_673_2021_bebd05babaadb7
+CHUNK 3: 01_quy_che_dao_tao_husc_qd_673_2021_6f2c8c0f7dd286
 Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
 Trang: [1]
 Headings: ['HIỆU TRƯỞNG TRƯỜNG ĐẠI HỌC KHOA HỌC']
@@ -27,196 +28,111 @@ Headings: ['HIỆU TRƯỞNG TRƯỜNG ĐẠI HỌC KHOA HỌC']
 --------------------------------------------------------------------------------
 HIỆU TRƯỞNG TRƯỜNG ĐẠI HỌC KHOA HỌC
 Căn cứ Nghị định số 30/CP ngày 04/04/1994 của Chính phủ về việc thành lập Đại học Huế và Thông tư số 10/2020/TT-BGDĐT ngày 14/05/2020 của Bộ trưởng Bộ Giáo dục và Đào tạo ban hành Quy chế tổ chức và hoạt động của đại học vùng và các cơ sở giáo dục đại học thành viên;
+Căn cứ Quyết định số 20/QĐ-HĐĐH ngày 31/07/2020 của Hội đồng Đại học Huế về việc ban hành Quy chế tổ chức và hoạt động của Đại học Huế và Quyết định số 07/QĐ-HĐĐH ngày 19/01/2021 của Hội đồng Đại học Huế về việc sửa đổi, bổ sung một số điều của
+Quy chế tổ chức và hoạt động của Đại học Huế; Căn
+cứ Quyết định số 489/QĐ-ĐHKH ngày 30/10/2015 của Hiệu trưởng Trường Đại học Khoa học ban hành Quy chế tổ chức và hoạt động của Trường Đại học Khoa học thuộc Đại học Huế; Căn
+cứ Thông tư số 08/2021/TT-BGDĐT ngày 18/03/2021 của Bộ trưởng Bộ Giáo dục
+và Đào tạo ban hành Quy chế đào tạo trình độ đại học; Căn cứ
 
 ================================================================================
-CHUNK 4: 01_quy_che_dao_tao_husc_qd_673_2021_f8608c84782c4b
+CHUNK 4: 01_quy_che_dao_tao_husc_qd_673_2021_f9bc3c9a2518a9
 Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
 Trang: [1]
 Headings: ['HIỆU TRƯỞNG TRƯỜNG ĐẠI HỌC KHOA HỌC']
 Điều/Khoản: None / None
 --------------------------------------------------------------------------------
 HIỆU TRƯỞNG TRƯỜNG ĐẠI HỌC KHOA HỌC
-Căn cứ Quyết định số 20/QĐ-HĐĐH ngày 31/07/2020 của Hội đồng Đại học Huế về việc ban hành Quy chế tổ chức và hoạt động của Đại học Huế và Quyết định số 07/QĐHĐĐH ngày 19/01/2021 của Hội đồng Đại học Huế về việc sửa đổi, bổ sung một số điều
-của Quy chế tổ chức và hoạt động của Đại học Huế;
+Quyết định số 1277/QĐ-ĐHH ngày 27/08/2021 của Giám đốc Đại học Huế ban hành
+Quy chế đào tạo trình độ đại học theo hệ thống tín chỉ tại Đại học Huế; Theo đề
+nghị của Trưởng phòng Đào tạo đại học và Công tác sinh viên. QUYẾT ĐỊNH:
 
 ================================================================================
-CHUNK 5: 01_quy_che_dao_tao_husc_qd_673_2021_ecbc4f4404ebd3
+CHUNK 5: 01_quy_che_dao_tao_husc_qd_673_2021_e26a2a9ca57329
 Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
 Trang: [1]
-Headings: ['HIỆU TRƯỞNG TRƯỜNG ĐẠI HỌC KHOA HỌC']
-Điều/Khoản: None / None
---------------------------------------------------------------------------------
-HIỆU TRƯỞNG TRƯỜNG ĐẠI HỌC KHOA HỌC
-Căn cứ Quyết định số 489/QĐ-ĐHKH ngày 30/10/2015 của Hiệu trưởng Trường Đại học Khoa học ban hành Quy chế tổ chức và hoạt động của Trường Đại học Khoa học thuộc
-ế Đại học Huế;
-Căn cứ Thông tư số 08/2021/TT-BGDĐT ngày 18/03/2021 của Bộ trưởng Bộ Giáo
-dục và Đào tạo ban hành Quy chế đào tạo trình độ đại học;
-
-================================================================================
-CHUNK 6: 01_quy_che_dao_tao_husc_qd_673_2021_bf5713d22f0b8b
-Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
-Trang: [1]
-Headings: ['HIỆU TRƯỞNG TRƯỜNG ĐẠI HỌC KHOA HỌC']
-Điều/Khoản: None / None
---------------------------------------------------------------------------------
-HIỆU TRƯỞNG TRƯỜNG ĐẠI HỌC KHOA HỌC
-Căn cứ Quyết định số 1277/QĐ-ĐHH ngày 27/08/2021 của Giám đốc Đại học Huế
-ban hành Quy chế đào tạo trình độ đại học theo hệ thống tín chỉ tại Đại học Huế;
-Theo đề nghị của Trưởng phòng Đào tạo đại học và Công tác sinh viên.
-
-================================================================================
-CHUNK 7: 01_quy_che_dao_tao_husc_qd_673_2021_6afedfade7db71
-Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
-Trang: [1]
-Headings: ['QUYẾT ĐỊNH:']
+Headings: ['Điều 1.']
 Điều/Khoản: Điều 1 / None
 --------------------------------------------------------------------------------
-QUYẾT ĐỊNH:
-- Điều 1. Ban hành kèm theo Quyết định này "Quy chế đào tạo đại học theo hệ thống tín chỉ của Trường Đại học Khoa học".
-- Điều 2. Quyết định này có hiệu lực kể từ ngày ký, áp dụng cho các khóa tuyển sinh từ
-- năm 2021 trở về sau và thay thế cho các Quyết định sau:
-
-================================================================================
-CHUNK 8: 01_quy_che_dao_tao_husc_qd_673_2021_e482fbcda47bee
-Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
-Trang: [1]
-Headings: ['QUYẾT ĐỊNH:']
-Điều/Khoản: None / None
---------------------------------------------------------------------------------
-QUYẾT ĐỊNH:
-- Quyết định số 257/QĐ-ĐHKH ngày 03/09/2015 của Hiệu trưởng Trường Đại học Khoa học về việc ban hành Quy chế học vụ về đào tạo đại học hệ chính quy theo hệ thống tín chỉ;
+Điều 1.
+- Ban hành kèm theo Quyết định này "Quy chế đào tạo đại học theo hệ thống tín chỉ của Trường Đại học Khoa học". Điều 2.
+- Quyết định này có hiệu lực kể từ ngày ký, áp dụng cho các khóa tuyển sinh từ năm 2021
+- trở về sau và thay thế cho các Quyết định sau: - Quyết
+- định số 257/QĐ-ĐHKH ngày 03/09/2015 của Hiệu trưởng Trường Đại học Khoa học về việc ban hành Quy chế học vụ về đào tạo đại học hệ chính quy theo hệ thống tín chỉ; -
 - Quyết định số 242/QĐ-ĐHKH ngày 08/08/2018 của Hiệu trưởng Trường Đại học Khoa học về việc bổ sung, sửa đổi một số điều của Quy chế học vụ về đào tạo đại học hệ chính quy theo hệ thống tín chỉ tại Trường Đại học Khoa học ban hành kèm theo Quyết định
-
-================================================================================
-CHUNK 9: 01_quy_che_dao_tao_husc_qd_673_2021_f95e414b61f596
-Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
-Trang: [1]
-Headings: ['QUYẾT ĐỊNH:']
-Điều/Khoản: None / None
---------------------------------------------------------------------------------
-QUYẾT ĐỊNH:
 - số 257/QĐ-ĐHKH ngày 03/09/2015 của Hiệu trưởng Trường Đại học Khoa học;
 
 ================================================================================
-CHUNK 10: 01_quy_che_dao_tao_husc_qd_673_2021_947863de4f4d84
+CHUNK 6: 01_quy_che_dao_tao_husc_qd_673_2021_b115792a8e5499
 Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
 Trang: [2]
-Headings: ['QUYẾT ĐỊNH:']
-Điều/Khoản: None / None
+Headings: ['Điều 1.']
+Điều/Khoản: Điều 1 / None
 --------------------------------------------------------------------------------
-QUYẾT ĐỊNH:
-- -Quyết định số 145/QĐ-ĐHKH ngày 07/06/2019 của Hiệu trưởng Trường Đại học Khoa học về việc bổ sung, sửa đổi một số điều của Quy chế học vụ về đào tạo đại học hệ chính quy theo hệ thống tín chỉ tại Trường Đại học Khoa học ban hành theo Quyết định số 257/QĐ-ĐHKH ngày 03/09/2015 của Hiệu trưởng Trường Đại học Khoa học được sửa đổi,
+Điều 1.
+- Quyết định số 145/QĐ-ĐHKH ngày 07/06/2019 của Hiệu trưởng Trường Đại học Khoa học về việc bổ sung, sửa đổi một số điều của Quy chế học vụ về đào tạo đại học hệ chính quy theo hệ thống tín chỉ tại Trường Đại học Khoa học ban hành theo Quyết định số 257/QĐ-ĐHKH ngày 03/09/2015 của Hiệu trưởng Trường Đại học Khoa học được sửa đổi, bổ sung bởi Quyết định số 242/QĐ-ĐHKH ngày 08/08/2018 của Hiệu trưởng Trường Đại học Khoa học;
+- Quyết định số 201/QĐ-ĐHKH ngày 27/06/2017 của Hiệu trưởng Trường Đại học Khoa học ban hành Quy chế đào tạo vừa làm vừa học trình độ đại học theo hệ thống tín chỉ của Trường Đại học Khoa học;
+- Quyết định số 209/QĐ-ĐHKH ngày 20/03/2020 của Hiệu trưởng Trường Đại học Khoa học ban hành Quy định tạm thời về tổ chức và quản lý đào tạo trực tuyến;
 
 ================================================================================
-CHUNK 11: 01_quy_che_dao_tao_husc_qd_673_2021_37515aabb72ea7
+CHUNK 7: 01_quy_che_dao_tao_husc_qd_673_2021_75a0fec48a0d9d
 Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
 Trang: [2]
-Headings: ['QUYẾT ĐỊNH:']
-Điều/Khoản: None / None
+Headings: ['Điều 1.']
+Điều/Khoản: Điều 1 / None
 --------------------------------------------------------------------------------
-QUYẾT ĐỊNH:
-bổ sung bởi Quyết định số 242/QĐ-ĐHKH ngày 08/08/2018 của Hiệu trưởng Trường Đại học Khoa học;
+Điều 1.
+- Quyết định số 761/QĐ-ĐHKH ngày 03/09/2020 của Hiệu trưởng Trường Đại học Khoa học ban hành Quy định nguyên tắc xét công nhận chuyển đổi kết quả học tập và khối lượng kiến thức được miễn trừ trong đào tạo đại học, loại hình liên thông từ trung cấp, cao đẳng lên đại học; đại học bằng thứ hai của Trường Đại học Khoa học.
+- Điều 3. Trưởng các phòng chức năng, Trưởng các khoa, Giám đốc Trung tâm Thông tin - Thư viện, cơ sở liên kết đào tạo, toàn thể viên chức, người lao động và sinh viên chịu trách nhiệm thi hành Quyết định này./.
 
 ================================================================================
-CHUNK 12: 01_quy_che_dao_tao_husc_qd_673_2021_6e164d3ac5ebb1
-Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
-Trang: [2]
-Headings: ['QUYẾT ĐỊNH:']
-Điều/Khoản: None / None
---------------------------------------------------------------------------------
-QUYẾT ĐỊNH:
-- -Quyết định số 201/QĐ-ĐHKH ngày 27/06/2017 của Hiệu trưởng Trường Đại học Khoa học ban hành Quy chế đào tạo vừa làm vừa học trình độ đại học theo hệ thống tín chỉ của Trường Đại học Khoa học;
-- -Quyết định số 209/QĐ-ĐHKH ngày 20/03/2020 của Hiệu trưởng Trường Đại học Khoa học ban hành Quy định tạm thời về tổ chức và quản lý đào tạo trực tuyến;
-
-================================================================================
-CHUNK 13: 01_quy_che_dao_tao_husc_qd_673_2021_e949d6ea3500fd
-Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
-Trang: [2]
-Headings: ['QUYẾT ĐỊNH:']
-Điều/Khoản: None / None
---------------------------------------------------------------------------------
-QUYẾT ĐỊNH:
-- -Quyết định số 761/QĐ-ĐHKH ngày 03/09/2020 của Hiệu trưởng Trường Đại học Khoa học ban hành Quy định nguyên tắc xét công nhận chuyển đổi kết quả học tập và khối lượng kiến thức được miễn trừ trong đào tạo đại học, loại hình liên thông từ trung cấp, cao đẳng lên đại học; đại học bằng thứ hai của Trường Đại học Khoa học.
-
-================================================================================
-CHUNK 14: 01_quy_che_dao_tao_husc_qd_673_2021_957c88b683a44e
-Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
-Trang: [2]
-Headings: ['QUYẾT ĐỊNH:']
-Điều/Khoản: Điều 3 / None
---------------------------------------------------------------------------------
-QUYẾT ĐỊNH:
-- Điều 3. Trưởng các phòng chức năng, Trưởng các khoa, Giám đốc Trung tâm Thông tin -Thư viện, cơ sở liên kết đào tạo, toàn thể viên chức, người lao động và sinh viên chịu trách nhiệm thi hành Quyết định này./.
-
-================================================================================
-CHUNK 15: 01_quy_che_dao_tao_husc_qd_673_2021_d305489c3afd91
+CHUNK 8: 01_quy_che_dao_tao_husc_qd_673_2021_b27cbd2fdcc398
 Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
 Trang: [2]
 Headings: ['Nơi nhận:']
 Điều/Khoản: Điều 3 / None
 --------------------------------------------------------------------------------
 Nơi nhận:
-- -Đại học Huế;
-- -Như Điều 3:
-- -Lưu: VT, ĐTĐHCTSV.
+- Đại học Huế;
+- Như Điều 3;
+- Lưu: VT, ĐTĐHCTSV.
 Võ Thanh Tùng
 
 ================================================================================
-CHUNK 16: 01_quy_che_dao_tao_husc_qd_673_2021_e9d704154df1f4
+CHUNK 9: 01_quy_che_dao_tao_husc_qd_673_2021_e9d704154df1f4
 Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
 Trang: [3]
-Headings: ['CHẾ']
+Headings: ['QUY CHẾ']
 Điều/Khoản: None / None
 --------------------------------------------------------------------------------
-CHẾ
+QUY CHẾ
 Đào tạo trình độ đại học theo hệ thống tín chỉ của Trường Đại học Khoa học (Ban hành kèm theo Quyết định số 673/QĐ-ĐHKH ngày 22 tháng 9 năm 2021
 của Hiệu trưởng Trường Đại học Khoa học)
 
 ================================================================================
-CHUNK 17: 01_quy_che_dao_tao_husc_qd_673_2021_243b6c92f51f4c
+CHUNK 10: 01_quy_che_dao_tao_husc_qd_673_2021_17bc6b7d39c9c9
 Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
 Trang: [3]
-Headings: ['đối tượng áp dụng']
-Điều/Khoản: Điều 14 / Khoản 1
+Headings: ['Điều 1. Phạm vi điều chỉnh và đối tượng áp dụng']
+Điều/Khoản: Điều 1 / Khoản 1
 --------------------------------------------------------------------------------
-đối tượng áp dụng
-1.
-Quy chế này quy định những vấn đề về tổ chức và quản lý đào tạo trình độ đại học và trình độ đào tạo các ngành chuyên sâu đặc thù quy định tại điểm a) khoản 1 Điều 14 Nghị định số 99/2019/NĐ-CP ngày 30/12/2019 của Chính phủ quy định chi tiết và hướng dẫn thi hành một số điều của Luật sửa đổi, bổ sung một số điều của Luật Giáo dục đại học (gọi chung là trình độ đại học), bao gồm: chương trình đào tạo; thời gian học tập;
+Điều 1. Phạm vi điều chỉnh và đối tượng áp dụng
+1. Quy chế này quy định những vấn đề về tổ chức và quản lý đào tạo trình độ đại học và trình độ đào tạo các ngành chuyên sâu đặc thù quy định tại điểm a) khoản 1 Điều 14 Nghị định số 99/2019/NĐ-CP ngày 30/12/2019 của Chính phủ quy định chi tiết và hướng dẫn thi hành một số điều của Luật sửa đổi, bổ sung một số điều của Luật Giáo dục đại học (gọi chung là trình độ đại học), bao gồm: chương trình đào tạo; thời gian học tập; hình thức và phương thức đào tạo; lập kế hoạch và tổ chức đào tạo; liên kết đào tạo; đánh giá kết quả học tập; công nhận kết quả học tập và chuyển đổi tín chỉ; học cùng lúc hai chương trình; xét, công nhận và cấp bằng tốt nghiệp trình độ đại học và những quy định khác đối với sinh viên.
 
 ================================================================================
-CHUNK 18: 01_quy_che_dao_tao_husc_qd_673_2021_b16d5cfad8dd2f
+CHUNK 11: 01_quy_che_dao_tao_husc_qd_673_2021_09b46dfa781ffc
 Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
 Trang: [3]
-Headings: ['đối tượng áp dụng']
-Điều/Khoản: None / None
+Headings: ['Điều 1. Phạm vi điều chỉnh và đối tượng áp dụng']
+Điều/Khoản: Điều 1 / Khoản 2
 --------------------------------------------------------------------------------
-đối tượng áp dụng
-hình thức và phương thức đào tạo; lập kế hoạch và tổ chức đào tạo; liên kết đào tạo; đánh giá kết quả học tập; công nhận kết quả học tập và chuyển đổi tín chỉ; học cùng lúc hai chương trình; xét, công nhận và cấp bằng tốt nghiệp trình độ đại học và những quy định khác đối với sinh viên.
-
-================================================================================
-CHUNK 19: 01_quy_che_dao_tao_husc_qd_673_2021_5513610eb65c5c
-Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
-Trang: [3]
-Headings: ['đối tượng áp dụng']
-Điều/Khoản: None / Khoản 2
---------------------------------------------------------------------------------
-đối tượng áp dụng
+Điều 1. Phạm vi điều chỉnh và đối tượng áp dụng
 2. Quy chế này áp dụng cho viên chức, người lao động, sinh viên đào tạo theo hệ thống tín chỉ của Trường Đại học Khoa học, Đại học Huế (sau đây gọi tắt là Trường Đại học Khoa học), giảng viên thỉnh giảng và các cơ sở liên kết đào tạo với Trường Đại học Khoa học.
-
-================================================================================
-CHUNK 20: 01_quy_che_dao_tao_husc_qd_673_2021_cd1a7bed897280
-Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
-Trang: [3]
-Headings: ['đối tượng áp dụng']
-Điều/Khoản: None / Khoản 3
---------------------------------------------------------------------------------
-đối tượng áp dụng
 3. Các chương trình đào tạo trình độ đại học liên kết với nước ngoài cấp bằng áp dụng theo quy chế này hoặc quy định của cơ sở đào tạo cấp bằng theo thỏa thuận liên kết, hợp tác giữa các bên nhưng không trái với những quy định của quy chế này.
 
 ================================================================================
-CHUNK 21: 01_quy_che_dao_tao_husc_qd_673_2021_3693373d01d65b
+CHUNK 12: 01_quy_che_dao_tao_husc_qd_673_2021_f8d43041ab96f9
 Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
-Trang: [3]
+Trang: [3, 4]
 Headings: ['Điều 2. Hình thức đào tạo và phương thức đào tạo']
 Điều/Khoản: Điều 2 / Khoản 1
 --------------------------------------------------------------------------------
@@ -224,63 +140,11 @@ Headings: ['Điều 2. Hình thức đào tạo và phương thức đào tạo'
 1. Trường Đại học Khoa học tổ chức đào tạo trình độ đại học theo hai hình thức đào tạo:
 - a) Đào tạo chính quy:
 3. Các hoạt động giảng dạy được thực hiện tại các cơ sở của Trường Đại học Khoa học, riêng những hoạt động tham quan, điền dã, trải nghiệm thực tế, thực hành, thực tập, đào tạo cùng doanh nghiệp và giảng dạy trực tuyến có thể thực hiện ngoài phạm vi các cơ sở của Trường Đại học Khoa học;
+4. Thời gian hoạt động giảng dạy của Trường Đại học Khoa học bắt đầu từ 07 giờ 00 đến 21 giờ 05 hằng ngày. Mỗi ngày có 12 tiết học được phân bố như ở Bảng 1: Bảng 1. Phân bố
+tiết học trong ngày Tiết học | Từ |
 
 ================================================================================
-CHUNK 22: 01_quy_che_dao_tao_husc_qd_673_2021_2fa1b22ce095ef
-Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
-Trang: [4]
-Headings: ['Điều 2. Hình thức đào tạo và phương thức đào tạo']
-Điều/Khoản: Điều 2 / Khoản 4
---------------------------------------------------------------------------------
-Điều 2. Hình thức đào tạo và phương thức đào tạo
-4. Thời gian hoạt động giảng dạy của Trường Đại học Khoa học bắt đầu từ 07 giờ 00 đến 21 giờ 05 hằng ngày. Mỗi ngày có 12 tiết học được phân bố như ở Bảng 1:
-5. Thời gian tổ chức những hoạt động đặc thù của chương trình đào tạo được thực hiện theo đặc điểm riêng của từng ngành đào tạo và học phần đào tạo được Hiệu trưởng phê duyệt trên cơ sở đề xuất của Khoa quản lý học phần đào tạo;
-- b) Đào tạo vừa làm vừa học:
-
-================================================================================
-CHUNK 23: 01_quy_che_dao_tao_husc_qd_673_2021_98c851de9a8338
-Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
-Trang: [4]
-Headings: ['Điều 2. Hình thức đào tạo và phương thức đào tạo']
-Điều/Khoản: Điều 2 / Khoản 7
---------------------------------------------------------------------------------
-Điều 2. Hình thức đào tạo và phương thức đào tạo
-7. -Các hoạt động giảng dạy được thực hiện tại Trường Đại học Khoa học hoặc tại cơ sở phối hợp đào tạo theo quy định liên kết đào tạo, riêng những hoạt động thực hành, thực tập, trải nghiệm thực tế và giảng dạy trực tuyến có thể thực hiện ngoài Trường Đại học Khoa học, cơ sở phối hợp đào tạo;
-8. Thời gian tổ chức hoạt động giảng dạy linh hoạt trong ngày và trong tuần;
-
-================================================================================
-CHUNK 24: 01_quy_che_dao_tao_husc_qd_673_2021_6ac5647770b900
-Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
-Trang: [4]
-Headings: ['Điều 2. Hình thức đào tạo và phương thức đào tạo']
-Điều/Khoản: Điều 2 / Khoản 9
---------------------------------------------------------------------------------
-Điều 2. Hình thức đào tạo và phương thức đào tạo
-9. -Đối với các ngành ưu tiên đào tạo phục vụ nguồn nhân lực phát triển kinh tế -xã hội trong từng giai đoạn, Trường Đại học Khoa học sẽ căn cứ các quy định, hướng dẫn của Bộ Giáo dục và Đào tạo, Đại học Huế để thực hiện các hình thức đào tạo phù hợp.
-
-================================================================================
-CHUNK 25: 01_quy_che_dao_tao_husc_qd_673_2021_a51b0255857c2f
-Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
-Trang: [4]
-Headings: ['Điều 2. Hình thức đào tạo và phương thức đào tạo']
-Điều/Khoản: Điều 2 / Khoản 2
---------------------------------------------------------------------------------
-Điều 2. Hình thức đào tạo và phương thức đào tạo
-2. Trường Đại học Khoa học tổ chức phương thức đào tạo theo tín chỉ cho trình độ đại học đối với tất cả các hình thức đào tạo, gồm: hình thức đào tạo chính quy và hình thức đào tạo vừa làm vừa học.
-
-================================================================================
-CHUNK 26: 01_quy_che_dao_tao_husc_qd_673_2021_cd3c565e0bed1f
-Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
-Trang: [4]
-Headings: ['Điều 2. Hình thức đào tạo và phương thức đào tạo']
-Điều/Khoản: Điều 2 / None
---------------------------------------------------------------------------------
-Điều 2. Hình thức đào tạo và phương thức đào tạo
-Bảng 1. Phân bố tiết học trong ngày
-Buổi sáng, Từ = Buổi sáng. Buổi sáng, Đến = Buổi sáng. Buổi sáng, Thời gian dạy - học = Buổi sáng. Buổi sáng, Thời gian nghỉ = Buổi sáng. Tiết 1, Từ = 07 giờ 00. Tiết 1, Đến = 07 giờ 50. Tiết 1, Thời gian dạy - học = 50 phút. Tiết 1, Thời gian nghỉ = 10 phút. Tiết 2, Từ = 08 giờ 00. Tiết 2, Đến = 08 giờ 50. Tiết
-
-================================================================================
-CHUNK 27: 01_quy_che_dao_tao_husc_qd_673_2021_b39a06affc23b3
+CHUNK 13: 01_quy_che_dao_tao_husc_qd_673_2021_3dd15b54aabca4
 Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
 Trang: [4]
 Headings: ['Điều 2. Hình thức đào tạo và phương thức đào tạo']
@@ -288,10 +152,10 @@ Headings: ['Điều 2. Hình thức đào tạo và phương thức đào tạo'
 --------------------------------------------------------------------------------
 Điều 2. Hình thức đào tạo và phương thức đào tạo
 
-2, Thời gian dạy - học = 50 phút. Tiết 2, Thời gian nghỉ = 10 phút. Tiết 3, Từ = 09 giờ 00. Tiết 3, Đến = 09 giờ 50. Tiết 3, Thời gian dạy - học = 50 phút. Tiết 3, Thời gian nghỉ = 10 phút. Tiết 4, Từ = 10 giờ 00. Tiết 4, Đến = 10 giờ 50. Tiết 4, Thời gian dạy - học = 50 phút. Tiết 4, Thời gian nghỉ = . Buổi chiều, Từ = Buổi chiều.
+1 |, = 1 |. 1 |, = 1 |. 1 |, = 1 |. 1 |, = 1 |. 07 giờ 00 | 07 giờ 50 | 50 phút | 10 phút, = . 07 giờ 00 | 07 giờ 50 | 50 phút | 10 phút, = . 07 giờ 00 | 07 giờ 50 | 50 phút | 10 phút, = . 07 giờ 00 | 07 giờ 50 | 50 phút | 10 phút, = . Tiết 2 | 08 giờ 00 | 08 giờ 50 | 50 phút |, = . Tiết 2 | 08 giờ 00 | 08 giờ 50 | 50 phút |, = . Tiết 2 | 08 giờ 00 | 08 giờ 50 | 50 phút |, = . Tiết 2 | 08 giờ 00 | 08 giờ 50 | 50 phút |, = . 10 phút Tiết 3 | 09 giờ 00 | 09 giờ 50 |, = . 10 phút Tiết 3 | 09 giờ 00 | 09 giờ 50 |, = . 10 phút Tiết 3 | 09 giờ 00 | 09 giờ 50 |, = . 10 phút Tiết 3 | 09 giờ 00 | 09 giờ 50 |, = . 50 phút | 10 phút Tiết 4 | 10 giờ 00, = . 50 phút | 10 phút Tiết 4 | 10 giờ 00, = .
 
 ================================================================================
-CHUNK 28: 01_quy_che_dao_tao_husc_qd_673_2021_44376eafd7ba7e
+CHUNK 14: 01_quy_che_dao_tao_husc_qd_673_2021_3e2d2dee4dcf5c
 Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
 Trang: [4]
 Headings: ['Điều 2. Hình thức đào tạo và phương thức đào tạo']
@@ -299,10 +163,10 @@ Headings: ['Điều 2. Hình thức đào tạo và phương thức đào tạo'
 --------------------------------------------------------------------------------
 Điều 2. Hình thức đào tạo và phương thức đào tạo
 
-Buổi chiều, Đến = Buổi chiều. Buổi chiều, Thời gian dạy - học = Buổi chiều. Buổi chiều, Thời gian nghỉ = Buổi chiều. Tiết 5, Từ = 13 giờ 00. Tiết 5, Đến = 13 giờ 50. Tiết 5, Thời gian dạy - học = 50 phút. Tiết 5, Thời gian nghỉ = 10 phút. Tiết 6, Từ = 14 giờ 00. Tiết 6, Đến = 14 giờ 50. Tiết 6, Thời gian dạy - học = 50 phút. Tiết 6, Thời gian
+50 phút | 10 phút Tiết 4 | 10 giờ 00, = . 50 phút | 10 phút Tiết 4 | 10 giờ 00, = . | 10 giờ, = | 10 giờ. | 10 giờ, = | 10 giờ. | 10 giờ, = | 10 giờ. | 10 giờ, = | 10 giờ. 50 | 50 phút | Buổi chiều Tiết 5 | 13 giờ 00, = . 50 | 50 phút | Buổi chiều Tiết 5 | 13 giờ 00, = . 50 | 50 phút | Buổi chiều Tiết 5 | 13 giờ 00, = . 50 | 50 phút | Buổi chiều Tiết 5 | 13 giờ 00, = . | 13 giờ 50 | 50 phút | 10 phút Tiết 6 | 14, = . | 13 giờ 50 | 50 phút | 10 phút Tiết 6 | 14, = . | 13 giờ 50 | 50 phút | 10 phút Tiết 6 | 14, = . | 13 giờ 50 | 50 phút | 10 phút Tiết 6 | 14, = . giờ 00 | 14 giờ 50 | 50 phút | 10 phút Tiết, = . giờ 00 | 14 giờ 50 | 50 phút | 10 phút Tiết, = . giờ 00 | 14 giờ 50 | 50 phút | 10 phút Tiết, = . giờ 00 | 14 giờ 50 | 50 phút
 
 ================================================================================
-CHUNK 29: 01_quy_che_dao_tao_husc_qd_673_2021_b473959dcc941e
+CHUNK 15: 01_quy_che_dao_tao_husc_qd_673_2021_3c69ff4fcb4e42
 Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
 Trang: [4]
 Headings: ['Điều 2. Hình thức đào tạo và phương thức đào tạo']
@@ -310,15 +174,184 @@ Headings: ['Điều 2. Hình thức đào tạo và phương thức đào tạo'
 --------------------------------------------------------------------------------
 Điều 2. Hình thức đào tạo và phương thức đào tạo
 
-nghỉ = 10 phút. Tiết 7, Từ = 15 giờ 00. Tiết 7, Đến = 15 giờ 50. Tiết 7, Thời gian dạy - học = 50 phút. Tiết 7, Thời gian nghỉ = 10 phút. Tiết 8, Từ = 16 giờ 00. Tiết 8, Đến = 16 giờ 50. Tiết 8, Thời gian dạy - học = 50 phút. Tiết 8, Thời gian nghỉ = . Buổi tối, Từ = Buổi tối. Buổi tối, Đến = Buổi tối. Buổi tối, Thời gian dạy -
+| 10 phút Tiết, = . 7 | 15 giờ 00 | 15 giờ 50 | 50, = . 7 | 15 giờ 00 | 15 giờ 50 | 50, = . 7 | 15 giờ 00 | 15 giờ 50 | 50, = . 7 | 15 giờ 00 | 15 giờ 50 | 50, = . phút |, = phút |. phút |, = phút |. phút |, = phút |. phút |, = phút |. 10 phút Tiết 8 | 16 giờ 00 | 16 giờ 50 | 50, = . 10 phút Tiết 8 | 16 giờ 00 | 16 giờ 50 | 50, = . 10 phút Tiết 8 | 16 giờ 00 | 16 giờ 50 | 50, = . 10 phút Tiết 8 | 16 giờ 00 | 16 giờ 50 | 50, = . phút | Buổi tối Tiết 9 | 17 giờ 30 | 18 giờ, = . phút | Buổi tối Tiết 9 | 17 giờ 30 | 18 giờ, = . phút | Buổi tối Tiết 9 | 17 giờ 30 | 18 giờ, = . phút | Buổi tối Tiết 9 | 17 giờ 30 | 18 giờ, = . 20 | 50 phút | 5 phút Tiết 10 | 18 giờ 25 |, = . 20 | 50 phút | 5 phút Tiết 10 | 18 giờ 25 |,
 
 ================================================================================
-CHUNK 30: 01_quy_che_dao_tao_husc_qd_673_2021_9b13a1f222b285
+CHUNK 16: 01_quy_che_dao_tao_husc_qd_673_2021_224a3073440c94
 Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
 Trang: [4]
 Headings: ['Điều 2. Hình thức đào tạo và phương thức đào tạo']
 Điều/Khoản: Điều 2 / None
 --------------------------------------------------------------------------------
 Điều 2. Hình thức đào tạo và phương thức đào tạo
+= . 20 | 50 phút | 5 phút Tiết 10 | 18 giờ 25 |, = . 20 | 50 phút | 5 phút Tiết 10 | 18 giờ 25 |, = . 19 giờ 15 | 50 phút | 5 phút Tiết 11, = . 19 giờ 15 | 50 phút | 5 phút Tiết 11, = . 19 giờ 15 | 50 phút | 5 phút Tiết 11, = . 19 giờ 15 | 50 phút | 5 phút Tiết 11, =
 
-học = Buổi tối. Buổi tối, Thời gian nghỉ = Buổi tối. Tiết 9, Từ = 17 giờ 30. Tiết 9, Đến = 18 giờ 20. Tiết 9, Thời gian dạy - học = 50 phút. Tiết 9, Thời gian nghỉ = 5 phút. Tiết 10, Từ = 18 giờ 25. Tiết 10, Đến = 19 giờ 15. Tiết 10, Thời gian dạy - học = 50 phút. Tiết 10, Thời gian nghỉ = 5 phút. Tiết 11, Từ = 19 giờ 20. Tiết 11, Đến = 20 giờ
+================================================================================
+CHUNK 17: 01_quy_che_dao_tao_husc_qd_673_2021_eb5fa262a796a0
+Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
+Trang: [4]
+Headings: ['Điều 2. Hình thức đào tạo và phương thức đào tạo']
+Điều/Khoản: Điều 2 / None
+--------------------------------------------------------------------------------
+Điều 2. Hình thức đào tạo và phương thức đào tạo
+- | 19 giờ 20 | 20 giờ 10 | 50 phút | 5 phút Tiết 12 | 20 giờ 15 | 21 giờ 05 | 50 phút | Thời gian tổ chức những hoạt động đặc thù của chương trình đào tạo được thực hiện theo đặc điểm riêng của từng ngành đào tạo và
+- học phần đào tạo được Hiệu trưởng phê
+- duyệt trên cơ sở đề xuất của Khoa quản lý học phần đào tạo; b) Đào tạo vừa làm vừa học: - Các hoạt động giảng dạy được thực hiện tại Trường Đại học Khoa học hoặc tại cơ sở phối hợp đào tạo theo quy định liên kết đào tạo, riêng những hoạt động thực hành, thực tập, trải nghiệm thực tế và giảng dạy trực tuyến có thể
+- thực hiện ngoài Trường Đại học Khoa học, cơ sở phối hợp đào tạo; Thời gian tổ
+
+================================================================================
+CHUNK 18: 01_quy_che_dao_tao_husc_qd_673_2021_e090e69416a428
+Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
+Trang: [4]
+Headings: ['Điều 2. Hình thức đào tạo và phương thức đào tạo']
+Điều/Khoản: Điều 2 / None
+--------------------------------------------------------------------------------
+Điều 2. Hình thức đào tạo và phương thức đào tạo
+- chức hoạt động giảng dạy linh hoạt trong ngày và trong tuần; - Đối với các ngành ưu tiên đào tạo phục vụ nguồn nhân lực phát triển kinh tế - xã hội trong từng giai đoạn, Trường Đại học Khoa học sẽ căn cứ các quy định, hướng dẫn của Bộ Giáo dục và Đào tạo, Đại học Huế để thực hiện các hình
+- thức đào tạo phù hợp. 2. Trường Đại học Khoa học tổ chức phương thức đào tạo theo tín chỉ cho trình độ đại học đối với tất cả các hình thức đào tạo, gồm: hình thức đào tạo chính quy và hình thức đào tạo vừa làm vừa học.
+
+================================================================================
+CHUNK 19: 01_quy_che_dao_tao_husc_qd_673_2021_073ab322689606
+Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
+Trang: [5]
+Headings: ['Điều 3. Mục tiêu và chuẩn đầu ra của chương trình đào tạo']
+Điều/Khoản: Điều 3 / Khoản 1
+--------------------------------------------------------------------------------
+Điều 3. Mục tiêu và chuẩn đầu ra của chương trình đào tạo
+1. Mục tiêu của chương trình đào tạo được xác định rõ ràng, phù hợp với ngành đào tạo; sứ mạng, tầm nhìn của Trường Đại học Khoa học và Đại học Huế; phù hợp với mục tiêu của giáo dục đại học quy định tại Luật giáo dục đại học.
+2. Chuẩn đầu ra thể hiện mục tiêu đào tạo trong đó bao gồm các nội dung và mức độ về kiến thức, kỹ năng, năng lực tự chủ và trách nhiệm; công việc mà người học có thể đảm nhận sau khi tốt nghiệp và các yêu cầu đặc thù khác đối với từng chương trình và ngành đào tạo đáp ứng Khung trình độ quốc gia Việt Nam. Chuẩn đầu ra được rà soát, điều chỉnh, bổ sung và hoàn thiện theo định kỳ bảo đảm cam kết của đơn vị đào tạo với yêu cầu của xã hội, đơn vị sử dụng sinh viên tốt nghiệp.
+
+================================================================================
+CHUNK 20: 01_quy_che_dao_tao_husc_qd_673_2021_d1d81a4cdf66b2
+Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
+Trang: [5]
+Headings: ['Điều 3. Mục tiêu và chuẩn đầu ra của chương trình đào tạo']
+Điều/Khoản: Điều 3 / Khoản 3
+--------------------------------------------------------------------------------
+Điều 3. Mục tiêu và chuẩn đầu ra của chương trình đào tạo
+3. Các nội dung của chuẩn đầu ra về kiến thức, kỹ năng, năng lực tự chủ và trách nhiệm được xác định theo các khối kiến thức. Chuẩn đầu ra được sử dụng làm cơ sở để thiết kế, đánh giá và cập nhật chương trình đào tạo, tổ chức thực thi chương trình đào tạo và đánh giá kết quả đào tạo.
+
+================================================================================
+CHUNK 21: 01_quy_che_dao_tao_husc_qd_673_2021_6c910652090c60
+Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
+Trang: [5]
+Headings: ['Điều 4. Chương trình đào tạo']
+Điều/Khoản: Điều 4 / Khoản 1
+--------------------------------------------------------------------------------
+Điều 4. Chương trình đào tạo
+1. Chương trình đào tạo được xây dựng theo đơn vị tín chỉ, cấu trúc từ các học phần, trong đó phải có đủ các học phần bắt buộc và đáp ứng chuẩn chương trình đào tạo theo quy định hiện hành của Bộ Giáo dục và Đào tạo. Trong trường hợp đào tạo song ngành hoặc ngành chính - ngành phụ, chương trình đào tạo phải thể hiện rõ khối lượng học tập chung và riêng theo từng ngành.
+2. Nội dung, chuẩn đầu ra của chương trình đào tạo áp dụng chung đối với các hình thức, phương thức tổ chức đào tạo và đối tượng người học khác nhau. Đối với người đã tốt nghiệp trình độ khác hoặc ngành khác, khối lượng học tập thực tế được xác định trên cơ sở công nhận, hoặc chuyển đổi tín chỉ đã tích lũy và miễn trừ học phần trong chương trình đào tạo trước.
+
+================================================================================
+CHUNK 22: 01_quy_che_dao_tao_husc_qd_673_2021_a1d76a7fcf3918
+Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
+Trang: [5]
+Headings: ['Điều 4. Chương trình đào tạo']
+Điều/Khoản: Điều 4 / Khoản 3
+--------------------------------------------------------------------------------
+Điều 4. Chương trình đào tạo
+3. Chương trình đào tạo phải thể hiện các nội dung sau: mã ngành đào tạo, tên ngành đào tạo, trình độ đào tạo; mục tiêu đào tạo; thời gian đào tạo; khối lượng kiến thức toàn khóa; đối tượng tuyển sinh; thang điểm; điều kiện và văn bằng tốt nghiệp; nội dung chương trình và dự kiến kế hoạch giảng dạy các học phần.
+4. Chương trình được cấu trúc từ các học phần thuộc hai khối kiến thức: khối kiến thức giáo dục đại cương và khối kiến thức giáo dục chuyên nghiệp. Khối kiến thức giáo dục chuyên nghiệp bao gồm nội dung khối kiến thức cơ sở ngành, khối kiến thức ngành (bao gồm cả khối kiến thức chuyên ngành), khối kiến thức thực tập - thực tế, khối kiến thức bổ trợ và khối kiến thức tốt nghiệp (khóa luận tốt nghiệp, đồ án tốt nghiệp hoặc các học phần thay thế khóa luận tốt nghiệp).
+
+================================================================================
+CHUNK 23: 01_quy_che_dao_tao_husc_qd_673_2021_8840bed1d6220b
+Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
+Trang: [6]
+Headings: ['Điều 4. Chương trình đào tạo']
+Điều/Khoản: Điều 4 / Khoản 5
+--------------------------------------------------------------------------------
+Điều 4. Chương trình đào tạo
+5. Chương trình đào tạo phải được công khai đối với người học trước khi tuyển sinh và khi bắt đầu khóa học; những thay đổi, điều chỉnh liên quan đến chương trình đào tạo được thực hiện theo quy định hiện hành và công bố trước khi áp dụng, không gây tác động bất lợi cho sinh viên.
+6. Khối lượng kiến thức tối thiểu đối với các chương trình đào tạo phải phù hợp với yêu
+7. cầu của Khung trình độ quốc gia Việt Nam, cụ thể như sau: a)
+8. Chương trình đào tạo trình độ đại học tối thiểu 120 tín chỉ cộng với khối lượng giáo
+9. dục quốc phòng - an ninh, giáo dục thể chất theo quy định hiện
+10. hành; b) Chương trình đào tạo trình độ đại học tối thiểu 150 tín chỉ cộng với khối
+11. lượng giáo dục quốc phòng - an ninh, giáo dục thể chất theo quy
+12. định hiện hành. 7. Hiệu trưởng quyết định ban hành chương trình đào tạo và đề cương
+13. chi tiết học phần của
+
+================================================================================
+CHUNK 24: 01_quy_che_dao_tao_husc_qd_673_2021_c7dd7ff87b46da
+Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
+Trang: [6]
+Headings: ['các ngành học. Điều']
+Điều/Khoản: Điều
+5 / Khoản 5
+--------------------------------------------------------------------------------
+các ngành học. Điều
+5. Học phần 1. Học phần là khối lượng kiến thức tương đối trọn vẹn, được bố trí giảng dạy đều trong một học kỳ để thuận lợi cho sinh viên tích lũy trong quá trình
+2. học tập. 2. Mỗi học phần được ký hiệu bằng một mã riêng, gọi là Mã học phần. Mã học phần gồm 07 ký tự, được cấu tạo từ hai nhóm: nhóm 03 ký tự bằng chữ đứng trước và nhóm 04 ký tự bằng số
+3. đứng sau. a) Nhóm 03 ký tự bằng chữ là viết tắt từ tên đơn vị khoa hoặc ngành chuyên môn thuộc đơn vị quản lý
+4. học phần; b) Nhóm 04 ký tự bằng số bao gồm: ba chữ số đầu phục vụ cho công tác
+5. kỹ thuật nhằm phân biệt các học phần; chữ số cuối cùng thể hiện số tín chỉ của học
+6. phần. 3. Có hai loại học phần trong chương trình đào
+7. tạo: a) Học phần bắt buộc là học phần chứa đựng những nội dung kiến thức chính yếu
+8. của mỗi chương trình và bắt buộc sinh viên phải tích
+
+================================================================================
+CHUNK 25: 01_quy_che_dao_tao_husc_qd_673_2021_90a0af2c1e7c94
+Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
+Trang: [6]
+Headings: ['các ngành học. Điều']
+Điều/Khoản: Điều
+9 / Khoản 9
+--------------------------------------------------------------------------------
+các ngành học. Điều
+9. lũy; b) Học phần tự chọn là học phần chứa đựng những nội dung kiến thức cần thiết, những sinh viên được tự chọn theo hướng dẫn của Trường Đại học Khoa học nhằm đa dạng hóa hướng chuyên môn hoặc được tự chọn tùy ý để tích lũy đủ số tín chỉ quy định cho mỗi chương
+
+================================================================================
+CHUNK 26: 01_quy_che_dao_tao_husc_qd_673_2021_e3a2bd7b0023ac
+Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
+Trang: [6, 7]
+Headings: ['trình. Điều 6. Tín']
+Điều/Khoản: Điều 6 / None
+--------------------------------------------------------------------------------
+trình. Điều 6. Tín
+- chỉ 1. Tín chỉ là đơn vị quy chuẩn dùng để lượng hóa khối lượng học tập của sinh viên. Một tín chỉ được quy định bằng số giờ giảng theo từng hình thức tổ chức giảng dạy và học tập theo Bảng 2. Để hoàn thành khối lượng kiến thức của một tín chỉ, sinh viên phải cần thêm ít nhất 30 giờ chuẩn bị cá nhân (ngoài giờ lên lớp).
+Bảng 2. Quy định số giờ giảng cho một tín chỉ theo từng hình thức tổ chức giảng dạy và học tập STT
+
+giờ/tín chỉ 1 | Dạy lý = thuyết | 15 giờ 2 | Làm bài tập, thảo luận, thực hành, thí nghiệm, đồ. giờ/tín chỉ 1 | Dạy lý = án học phần | 30 giờ 3 | Làm bài tập lớn, tiểu luận,. giờ/tín chỉ 1 | Dạy lý = thực tập thực tế | 45 giờ 4 | Đồ
+
+================================================================================
+CHUNK 27: 01_quy_che_dao_tao_husc_qd_673_2021_6ff0ce689de0c6
+Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
+Trang: [7]
+Headings: ['là một tiết học) được tính bằng 50']
+Điều/Khoản: Điều 7 / None
+--------------------------------------------------------------------------------
+là một tiết học) được tính bằng 50
+- phút. Điều 7. Đề cương chi tiết học phần 1. Đề cương chi tiết của học phần phải thể hiện những nội dung sau: tên học phần, mã học phần, số tín chỉ, số giờ kế hoạch và phân bố giờ kế hoạch (lý thuyết, bài tập, thảo luận, thực hành, thực tập), điều kiện để học học phần (học phần tiên quyết, học phần học trước, học phần song hành), đơn vị phụ trách, nội dung tóm tắt học phần, mục tiêu của học phần (mục tiêu tổng quát, mục tiêu cụ thể), chuẩn đầu ra (chuẩn kiến thức, chuẩn kỹ năng, chuẩn năng lực tự chủ và trách nhiệm), học liệu (tài liệu bắt buộc, tài liệu tham khảo), nội dung và phương pháp kiểm tra đánh giá (đánh giá quá trình học tập, đánh giá cuối kỳ), nội dung chi tiết học phần và hình thức tổ chức dạy học, thông tin về giảng viên phụ trách học phần; quy định chính sách đối với học phần, thông tin chung
+
+================================================================================
+CHUNK 28: 01_quy_che_dao_tao_husc_qd_673_2021_a73c1ee20d7ecb
+Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
+Trang: [7]
+Headings: ['là một tiết học) được tính bằng 50']
+Điều/Khoản: None / None
+--------------------------------------------------------------------------------
+là một tiết học) được tính bằng 50
+- về giảng viên phụ trách. 2. Đề cương chi tiết học phần do một hoặc nhiều giảng viên có cùng chuyên môn, am hiểu về nội dung, kiến thức của học phần đó biên soạn và được Hiệu trưởng phê duyệt trước khi tổ chức
+
+================================================================================
+CHUNK 29: 01_quy_che_dao_tao_husc_qd_673_2021_a0c2ee6617a918
+Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
+Trang: [7]
+Headings: ['QUẢN LÝ ĐÀO TẠO Điều 8. Công bố thông tin và tác nghiệp với hoạt']
+Điều/Khoản: Điều 8 / None
+--------------------------------------------------------------------------------
+QUẢN LÝ ĐÀO TẠO Điều 8. Công bố thông tin và tác nghiệp với hoạt
+- động đào tạo 1. Trường Đại học Khoa học thống nhất công bố các thông tin về các hoạt động giảng dạy và học tập trên Website thông tin đào tạo đại học tại địa
+- chỉ http://ums.husc.edu.vn. 2. Trường Đại học Khoa học cung cấp tài khoản cá nhân cho từng cán bộ, giảng viên, sinh viên để sử dụng Website thông tin đào tạo đại học. Cán bộ, giảng viên và sinh viên chịu trách nhiệm bảo mật tài khoản cá nhân của mình để sử dụng trong quá trình tác nghiệp, giảng dạy và học
+
+================================================================================
+CHUNK 30: 01_quy_che_dao_tao_husc_qd_673_2021_6674aecff89626
+Nguồn: 01_quy_che_dao_tao_husc_qd_673_2021.pdf
+Trang: [7, 8]
+Headings: ['tập. Điều 9. Thời gian và kế hoạch đào']
+Điều/Khoản: Điều 9 / None
+--------------------------------------------------------------------------------
+tập. Điều 9. Thời gian và kế hoạch đào
+- tạo 1. Trường Đại học Khoa học tổ chức đào tạo theo khóa học, năm học và học kỳ.
+- a) Khóa học là thời gian quy định để sinh viên hoàn thành một chương trình đào tạo
+cụ thể của một ngành nhất định; khóa học được quy định như sau:
