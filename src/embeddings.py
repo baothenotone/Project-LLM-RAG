@@ -5,8 +5,6 @@ import faiss
 from pathlib import Path
 from sentence_transformers import SentenceTransformer
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
-
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 CHUNKS_FILE = PROJECT_ROOT / "data" / "chunks" / "chunks.json"
 VECTOR_FOLDER = PROJECT_ROOT / "vector_store"

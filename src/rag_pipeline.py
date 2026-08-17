@@ -5,7 +5,6 @@ from google import genai
 from google.genai import types
 from retriever import load_retriever_resources, retrieve
 
-logging.basicConfig(level=logging.INFO, format="%(message)s")
 load_dotenv()
 
 def init_rag_system():

@@ -12,7 +12,6 @@ from sentence_transformers import CrossEncoder, SentenceTransformer
 
 from query_expansion import expand_query
 
-logging.basicConfig(level=logging.INFO, format="%(message)s")
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 def load_retriever_resources():
@@ -151,3 +150,86 @@ def retrieve(question, resources, top_k=5, pool_size=50, rrf_k=60):
         results.append(item)
         
     return results
+
+def print_results(results):
+    if not results:
+        print("Không tìm thấy kết quả phù hợp.")
+        return
+
+    for rank, item in enumerate(results, start=1):
+        content = (
+            item.get("content")
+            or item.get("text")
+            or item.get("embedding_text")
+            or ""
+        )
+
+        source_file = (
+            item.get("source_file")
+            or item.get("file_name")
+            or "Không xác định"
+        )
+
+        pages = (
+            item.get("pages")
+            or item.get("page")
+            or "Không xác định"
+        )
+
+        print("\n" + "=" * 80)
+        print("TOP:", rank)
+        print("Score:", f"{item.get('score', 0):.4f}")
+        print("File:", source_file)
+        print("Trang:", pages)
+        print("Chunk ID:", item.get("chunk_id", ""))
+        print("Nội dung:")
+        print(content)
+
+
+# Chạy thử hệ thống truy xuất.
+def main():
+    try:
+        print("Đang nạp dữ liệu và các mô hình AI (FAISS, BM25, CrossEncoder)...")
+        # Khởi tạo và nạp toàn bộ tài nguyên cần thiết cho retriever
+        resources = load_retriever_resources() 
+    except Exception as error:
+        print("Không thể khởi tạo hệ thống:")
+        print(error)
+        return
+
+    print("\nHệ thống Retrieval đã sẵn sàng.")
+    print("Nhập 'exit' để kết thúc.\n")
+
+    while True:
+        try:
+            question = input("Nhập câu hỏi: ").strip()
+
+            if question.lower() == "exit":
+                print("Đã kết thúc.")
+                break
+
+            if not question:
+                print("Câu hỏi không được để trống.\n")
+                continue
+
+            # Truyền thêm tham số resources vào hàm retrieve
+            results = retrieve(
+                question=question,
+                resources=resources, 
+                top_k=5,
+            )
+
+            print_results(results)
+            print()
+
+        except KeyboardInterrupt:
+            print("\nĐã kết thúc.")
+            break
+
+        except Exception as error:
+            print("Lỗi khi truy xuất:", error)
+            print()
+
+
+if __name__ == "__main__":
+    main()

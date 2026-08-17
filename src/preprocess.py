@@ -15,8 +15,6 @@ from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling_core.transforms.chunker.tokenizer.huggingface import HuggingFaceTokenizer
 from transformers import AutoTokenizer
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
-
 # Định nghĩa các thư mục
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = PROJECT_ROOT / "data" / "raw"

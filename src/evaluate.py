@@ -4,8 +4,6 @@ import time
 from pathlib import Path
 from rag_pipeline import init_rag_system, ask
 
-logging.basicConfig(level=logging.INFO, format="%(message)s")
-
 # Danh sách các câu hỏi để test đa dạng các trường hợp
 TEST_CASES = [
     # --- 1. Câu hỏi định nghĩa cơ bản ---

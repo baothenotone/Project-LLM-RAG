@@ -7,7 +7,6 @@ from google import genai
 from google.genai import types
 from dotenv import load_dotenv
 
-logging.basicConfig(level=logging.INFO, format="%(message)s")
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 def expand_query(question, count=3):
