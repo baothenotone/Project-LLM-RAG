@@ -1,12 +1,10 @@
-from __future__ import annotations
-
 import gc
 import hashlib
 import json
+import logging
 import re
 import unicodedata
 from pathlib import Path
-from typing import Any
 
 from docling.backend.pypdfium2_backend import PyPdfiumDocumentBackend
 from docling.chunking import HybridChunker
@@ -17,325 +15,225 @@ from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling_core.transforms.chunker.tokenizer.huggingface import HuggingFaceTokenizer
 from transformers import AutoTokenizer
 
-class LegalDocumentPreprocessor:
-    def __init__(self):
-        # 1. CẤU HÌNH THƯ MỤC
-        self.project_root = Path(__file__).resolve().parent.parent
-        self.raw_dir = self.project_root / "data" / "raw"
-        self.extracted_dir = self.project_root / "data" / "extracted"
-        self.chunks_dir = self.project_root / "data" / "chunks"
-        self.reports_dir = self.project_root / "data" / "reports"
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
 
-        self.chunks_file = self.chunks_dir / "chunks.json"
-        self.report_file = self.reports_dir / "preprocess_report.json"
-        self.preview_file = self.reports_dir / "chunks_preview.txt"
+# Định nghĩa các thư mục
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+RAW_DIR = PROJECT_ROOT / "data" / "raw"
+EXTRACTED_DIR = PROJECT_ROOT / "data" / "extracted"
+CHUNKS_DIR = PROJECT_ROOT / "data" / "chunks"
 
-        # 2. CẤU HÌNH MODEL & CHUNKING
-        self.embedding_model = "bkai-foundation-models/vietnamese-bi-encoder"
-        self.max_chunk_tokens = 256 
+# Tạo thư mục nếu chưa có
+RAW_DIR.mkdir(parents=True, exist_ok=True)
+EXTRACTED_DIR.mkdir(parents=True, exist_ok=True)
+CHUNKS_DIR.mkdir(parents=True, exist_ok=True)
+
+def clean_text(text):
+    if not text:
+        return ""
+    # Xóa các ký tự ẩn
+    text = unicodedata.normalize("NFC", text)
+    text = text.replace("\u00ad", "").replace("\u200b", "").replace("\x00", "")
+    # Đưa về một chuẩn xuống dòng
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    # Xóa khoảng trắng thừa
+    text = re.sub(r"[ \t]+", " ", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip()
+
+def extract_legal_metadata(content, headings):
+    searchable_text = "\n".join(headings + [content])
+    metadata = {
+        "chapter": None,
+        "section": None,
+        "article": None,
+        "clause": None,
+        "point": None
+    }
+    
+    # Tìm Chương
+    match_chapter = re.search(r"\bChương\s+[IVXLCDM]+\b", searchable_text, flags=re.IGNORECASE)
+    if match_chapter:
+        metadata["chapter"] = match_chapter.group(0).strip()
         
-        self.enable_ocr = False
-        self.force_full_page_ocr = False
-        self.min_chunk_chars = 35
-        self.preview_chunk_count = 30
-        self.max_files = None
-
-        self._setup_directories()
-        self.converter = self._create_converter()
-        self.chunker = self._create_chunker()
-
-    def _setup_directories(self):
-        for folder in [self.raw_dir, self.extracted_dir, self.chunks_dir, self.reports_dir]:
-            folder.mkdir(parents=True, exist_ok=True)
-
-    @staticmethod
-    def clean_text(text: str) -> str:
-        if not text:
-            return ""
-        text = unicodedata.normalize("NFC", text)
-        text = text.replace("\u00ad", "").replace("\u200b", "").replace("\ufeff", "").replace("\x00", "")
-        text = text.replace("\r\n", "\n").replace("\r", "\n")
-        text = re.sub(r"[ \t]+", " ", text)
-        text = re.sub(r" *\n *", "\n", text)
-        text = re.sub(r"\n{3,}", "\n\n", text)
-        return text.strip()
-
-    @staticmethod
-    def normalized_key(text: str) -> str:
-        text = LegalDocumentPreprocessor.clean_text(text).lower()
-        return re.sub(r"\s+", " ", text).strip()
-
-    @staticmethod
-    def has_suspicious_characters(text: str) -> bool:
-        return "\ufffd" in text or "" in text
-
-    def _get_page_numbers(self, chunk: Any) -> list[int]:
-        pages: set[int] = set()
-        meta = getattr(chunk, "meta", None)
-        for item in getattr(meta, "doc_items", []) or []:
-            for provenance in getattr(item, "prov", []) or []:
-                page_number = getattr(provenance, "page_no", None)
-                if isinstance(page_number, int):
-                    pages.add(page_number)
-        return sorted(pages)
-
-    def _get_headings(self, chunk: Any) -> list[str]:
-        meta = getattr(chunk, "meta", None)
-        headings = getattr(meta, "headings", []) or []
-        cleaned_headings = []
-        for heading in headings:
-            value = self.clean_text(str(heading))
-            if value:
-                cleaned_headings.append(value)
-        return cleaned_headings
-
-    def _get_item_labels(self, chunk: Any) -> list[str]:
-        labels: list[str] = []
-        meta = getattr(chunk, "meta", None)
-        for item in getattr(meta, "doc_items", []) or []:
-            label = getattr(item, "label", None)
-            if label is None:
-                continue
-            value = str(label).split(".")[-1].lower()
-            if value not in labels:
-                labels.append(value)
-        return labels
-
-    def _contextualize_chunk(self, chunk: Any) -> str:
-        if hasattr(self.chunker, "contextualize"):
-            return self.clean_text(self.chunker.contextualize(chunk=chunk))
-        if hasattr(self.chunker, "serialize"):
-            return self.clean_text(self.chunker.serialize(chunk))
-        return self.clean_text(getattr(chunk, "text", ""))
-
-    def _extract_legal_metadata(self, content: str, headings: list[str]) -> dict[str, str | None]:
-        searchable_text = "\n".join([*headings, content])
+    # Tìm Mục
+    match_section = re.search(r"\bMục\s+\d+\b", searchable_text, flags=re.IGNORECASE)
+    if match_section:
+        metadata["section"] = match_section.group(0).strip()
         
-        def first_match(pattern: str, text: str) -> str | None:
-            match = re.search(pattern, text, flags=re.IGNORECASE | re.MULTILINE)
-            return match.group(0).strip() if match else None
+    # Tìm Điều
+    match_article = re.search(r"\bĐiều\s+\d+[a-zA-Z]?\b", searchable_text, flags=re.IGNORECASE)
+    if match_article:
+        metadata["article"] = match_article.group(0).strip()
+        
+    # Tìm Khoản (VD: "1. ")
+    match_clause = re.search(r"(?m)^\s*(\d+)\.\s+\S+", content)
+    if match_clause:
+        metadata["clause"] = f"Khoản {match_clause.group(1)}"
+        
+    # Tìm Điểm (VD: "a) ")
+    match_point = re.search(r"(?m)^\s*([a-zđ])\)\s+\S+", content, flags=re.IGNORECASE)
+    if match_point:
+        metadata["point"] = f"Điểm {match_point.group(1).lower()}"
+        
+    return metadata
 
-        chapter = first_match(r"\bChương\s+[IVXLCDM]+\b", searchable_text)
-        section = first_match(r"\bMục\s+\d+\b", searchable_text)
-        article = first_match(r"\bĐiều\s+\d+[a-zA-Z]?\b", searchable_text)
+def init_docling():
+    pipeline_options = PdfPipelineOptions(do_ocr=False, do_table_structure=True)
+    # Dùng chế độ ACCURATE để xuất bảng thành định dạng Markdown (giúp LLM đọc tốt hơn)
+    pipeline_options.table_structure_options.mode = TableFormerMode.ACCURATE 
+    pipeline_options.table_structure_options.do_cell_matching = True
+    
+    pipeline_options.layout_batch_size = 1
+    pipeline_options.table_batch_size = 1
+    pipeline_options.ocr_batch_size = 1
+    pipeline_options.queue_max_size = 4
+    pipeline_options.accelerator_options = AcceleratorOptions(num_threads=2, device=AcceleratorDevice.CPU)
+    
+    pdf_option = PdfFormatOption(pipeline_options=pipeline_options, backend=PyPdfiumDocumentBackend)
+    converter = DocumentConverter(allowed_formats=[InputFormat.PDF], format_options={InputFormat.PDF: pdf_option})
+    
+    # Khởi tạo mô hình cắt chunk
+    raw_tokenizer = AutoTokenizer.from_pretrained("bkai-foundation-models/vietnamese-bi-encoder")
+    tokenizer = HuggingFaceTokenizer(tokenizer=raw_tokenizer, max_tokens=256)
+    chunker = HybridChunker(tokenizer=tokenizer, merge_peers=True)
+    
+    return converter, chunker
 
-        clause_match = re.search(r"(?m)^\s*(\d+)\.\s+\S+", content)
-        clause = f"Khoản {clause_match.group(1)}" if clause_match else None
+def process_pdf(pdf_file, converter, chunker):
+    # Đọc PDF
+    result = converter.convert(source=str(pdf_file))
+    document = result.document
 
-        point_match = re.search(r"(?m)^\s*([a-zđ])\)\s+\S+", content, flags=re.IGNORECASE)
-        point = f"Điểm {point_match.group(1).lower()}" if point_match else None
+    # Lưu lại file Markdown để xem (nếu cần)
+    markdown_path = EXTRACTED_DIR / f"{pdf_file.stem}.md"
+    markdown_path.write_text(document.export_to_markdown(), encoding="utf-8")
 
-        return {
-            "chapter": chapter,
-            "section": section,
-            "article": article,
-            "clause": clause,
-            "point": point,
-        }
-
-    def _extract_document_number(self, text: str, filename: str) -> str | None:
-        source = f"{filename}\n{text[:3000]}"
-        patterns = [
-            r"\b\d+/\d{4}/TT-[A-ZĐ-]+\b",
-            r"\b\d+/QĐ-[A-ZĐ-]+\b",
-            r"\b\d+/[A-ZĐ]+-[A-ZĐ-]+\b",
-        ]
-        for pattern in patterns:
-            match = re.search(pattern, source, flags=re.IGNORECASE)
-            if match:
-                return match.group(0).upper()
-        return None
-
-    def _should_keep_chunk(self, content: str, labels: list[str]) -> bool:
+    records = []
+    seen_chunks = set()
+    
+    # Cắt nhỏ file PDF thành các đoạn (chunks)
+    chunk_iterator = chunker.chunk(dl_doc=document)
+    
+    for original_index, chunk in enumerate(chunk_iterator):
+        content = clean_text(getattr(chunk, "text", ""))
+        
+        # 1. Trích xuất trang (pages)
+        pages_set = set()
+        meta = getattr(chunk, "meta", None)
+        if meta and hasattr(meta, "doc_items"):
+            for item in meta.doc_items or []:
+                for prov in getattr(item, "prov", []) or []:
+                    page_no = getattr(prov, "page_no", None)
+                    if isinstance(page_no, int):
+                        pages_set.add(page_no)
+        pages = sorted(list(pages_set))
+        
+        # 2. Trích xuất tiêu đề (headings)
+        headings = []
+        if meta and hasattr(meta, "headings"):
+            for heading in meta.headings or []:
+                cleaned_heading = clean_text(str(heading))
+                if cleaned_heading:
+                    headings.append(cleaned_heading)
+                    
+        # 3. Trích xuất nhãn (labels)
+        labels = []
+        if meta and hasattr(meta, "doc_items"):
+            for item in meta.doc_items or []:
+                label = getattr(item, "label", None)
+                if label is not None:
+                    label_str = str(label).split(".")[-1].lower()
+                    if label_str not in labels:
+                        labels.append(label_str)
+        
+        # --- BỘ LỌC CHUNK ---
         if not content:
-            return False
-
-        ignored_labels = {"page_header", "page_footer"}
-        if labels and set(labels).issubset(ignored_labels):
-            return False
-
+            continue
+            
+        # Bỏ qua header/footer
+        if labels and set(labels).issubset({"page_header", "page_footer"}):
+            continue
+            
+        # Bỏ qua chunk chỉ chứa số trang
         if re.fullmatch(r"(?i)\s*(?:trang\s*)?[-–—]?\s*\d+\s*[-–—]?\s*", content):
-            return False
+            continue
+            
+        # Bỏ qua chunk rác, quá ngắn
+        letter_count = sum(c.isalpha() for c in content)
+        contains_article = re.search(r"\bĐiều\s+\d+[a-zA-Z]?\b", content, re.IGNORECASE)
+        if letter_count < 8 or (len(content) < 35 and not contains_article):
+            continue
+            
+        # Lọc trùng lặp
+        duplicate_key = re.sub(r"\s+", " ", content.lower()).strip()
+        if duplicate_key in seen_chunks:
+            continue
+        seen_chunks.add(duplicate_key)
+        # --- KẾT THÚC BỘ LỌC ---
 
-        letter_count = sum(character.isalpha() for character in content)
-        if letter_count < 8:
-            return False
+        # Lấy nội dung để embedding (chứa thêm ngữ cảnh nếu có)
+        if hasattr(chunker, "contextualize"):
+            embedding_text = clean_text(chunker.contextualize(chunk=chunk))
+        else:
+            embedding_text = content
+            
+        # Tìm số Quyết định/Thông tư
+        document_number = None
+        source_text = f"{pdf_file.name}\n{embedding_text[:3000]}"
+        doc_patterns = [r"\b\d+/\d{4}/TT-[A-ZĐ-]+\b", r"\b\d+/QĐ-[A-ZĐ-]+\b", r"\b\d+/[A-ZĐ]+-[A-ZĐ-]+\b"]
+        for pattern in doc_patterns:
+            match = re.search(pattern, source_text, flags=re.IGNORECASE)
+            if match:
+                document_number = match.group(0).upper()
+                break
 
-        contains_article = bool(re.search(r"\bĐiều\s+\d+[a-zA-Z]?\b", content, re.IGNORECASE))
-        if len(content) < self.min_chunk_chars and not contains_article:
-            return False
-
-        return True
-
-    def _make_chunk_id(self, source_file: str, pages: list[int], content: str) -> str:
-        raw_value = f"{source_file}|{pages}|{self.normalized_key(content)}"
+        # Tạo ID cho chunk
+        raw_value = f"{pdf_file.name}|{pages}|{duplicate_key}"
         digest = hashlib.sha1(raw_value.encode("utf-8")).hexdigest()[:14]
-        return f"{Path(source_file).stem}_{digest}"
+        chunk_id = f"{pdf_file.stem}_{digest}"
+        
+        legal_metadata = extract_legal_metadata(content, headings)
 
-    def _create_converter(self) -> DocumentConverter:
-        pipeline_options = PdfPipelineOptions(do_ocr=self.enable_ocr, do_table_structure=True)
-        pipeline_options.table_structure_options.mode = TableFormerMode.FAST
-        pipeline_options.table_structure_options.do_cell_matching = True
-        pipeline_options.layout_batch_size = 1
-        pipeline_options.table_batch_size = 1
-        pipeline_options.ocr_batch_size = 1
-        pipeline_options.queue_max_size = 4
-        pipeline_options.generate_page_images = False
-        pipeline_options.generate_picture_images = False
-        pipeline_options.generate_parsed_pages = False
-        pipeline_options.accelerator_options = AcceleratorOptions(num_threads=2, device=AcceleratorDevice.CPU)
-
-        if self.enable_ocr and self.force_full_page_ocr:
-            pipeline_options.ocr_options.force_full_page_ocr = True
-
-        pdf_option = PdfFormatOption(pipeline_options=pipeline_options, backend=PyPdfiumDocumentBackend)
-        return DocumentConverter(allowed_formats=[InputFormat.PDF], format_options={InputFormat.PDF: pdf_option})
-
-    def _create_chunker(self) -> HybridChunker:
-        raw_tokenizer = AutoTokenizer.from_pretrained(self.embedding_model)
-        tokenizer = HuggingFaceTokenizer(tokenizer=raw_tokenizer, max_tokens=self.max_chunk_tokens)
-        return HybridChunker(tokenizer=tokenizer, merge_peers=True)
-
-    def process_pdf(self, pdf_file: Path) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-        print(f"\nĐang xử lý: {pdf_file.name}")
-
-        result = self.converter.convert(source=str(pdf_file))
-        document = result.document
-
-        markdown_file = self.extracted_dir / f"{pdf_file.stem}.md"
-        markdown_file.write_text(document.export_to_markdown(), encoding="utf-8")
-
-        records: list[dict[str, Any]] = []
-        seen_chunks: set[str] = set()
-        skipped_short, skipped_duplicate = 0, 0
-
-        chunk_iterator = self.chunker.chunk(dl_doc=document)
-
-        for original_index, chunk in enumerate(chunk_iterator):
-            content = self.clean_text(getattr(chunk, "text", ""))
-            embedding_text = self._contextualize_chunk(chunk)
-            pages = self._get_page_numbers(chunk)
-            headings = self._get_headings(chunk)
-            labels = self._get_item_labels(chunk)
-
-            if not self._should_keep_chunk(content, labels):
-                skipped_short += 1
-                continue
-
-            duplicate_key = self.normalized_key(content)
-            if duplicate_key in seen_chunks:
-                skipped_duplicate += 1
-                continue
-            seen_chunks.add(duplicate_key)
-
-            legal_metadata = self._extract_legal_metadata(content, headings)
-
-            record = {
-                "chunk_id": self._make_chunk_id(pdf_file.name, pages, content),
-                "content": content,
-                "embedding_text": embedding_text,
-                "source_file": pdf_file.name,
-                "source_path": str(pdf_file.relative_to(self.project_root)),
-                "document_title": headings[0] if headings else pdf_file.stem,
-                "document_number": self._extract_document_number(embedding_text, pdf_file.name),
-                "original_chunk_index": original_index,
-                "headings": headings,
-                "labels": labels,
-                "pages": pages,
-                "page_start": pages[0] if pages else None,
-                "page_end": pages[-1] if pages else None,
-                **legal_metadata,
-                "character_count": len(content),
-                "word_count": len(content.split()),
-                "has_suspicious_characters": self.has_suspicious_characters(content),
-            }
-            records.append(record)
-
-        missing_page_count = sum(1 for r in records if not r["pages"])
-        suspicious_count = sum(1 for r in records if r["has_suspicious_characters"])
-
-        report = {
+        record = {
+            "chunk_id": chunk_id,
+            "content": content,
+            "embedding_text": embedding_text,
             "source_file": pdf_file.name,
-            "status": "success",
-            "pdf_page_count": len(getattr(document, "pages", {}) or {}),
-            "markdown_file": str(markdown_file.relative_to(self.project_root)),
-            "kept_chunks": len(records),
-            "skipped_short_or_noise": skipped_short,
-            "skipped_duplicate": skipped_duplicate,
-            "chunks_without_page_number": missing_page_count,
-            "suspicious_chunks": suspicious_count,
+            "document_title": headings[0] if headings else pdf_file.stem,
+            "document_number": document_number,
+            "pages": pages,
         }
+        # Gộp các metadata pháp lý vào record
+        record.update(legal_metadata)
+        records.append(record)
 
-        print(f"  Giữ lại: {len(records)} chunk")
-        print(f"  Thiếu số trang: {missing_page_count}")
-        print(f"  Cần kiểm tra ký tự: {suspicious_count}")
+    return records
 
-        return records, report
+def run_preprocess():
+    pdf_files = sorted(RAW_DIR.rglob("*.pdf"))
+    if not pdf_files:
+        logging.warning("Không tìm thấy file PDF nào trong thư mục data/raw/")
+        return
 
-    def write_preview(self, records: list[dict[str, Any]]):
-        sections = []
-        for index, record in enumerate(records[:self.preview_chunk_count], start=1):
-            sections.append(
-                "\n".join([
-                    "=" * 80,
-                    f"CHUNK {index}: {record['chunk_id']}",
-                    f"Nguồn: {record['source_file']}",
-                    f"Trang: {record['pages']}",
-                    f"Headings: {record['headings']}",
-                    f"Điều/Khoản: {record['article']} / {record['clause']}",
-                    "-" * 80,
-                    record["embedding_text"],
-                ])
-            )
-        self.preview_file.write_text("\n\n".join(sections), encoding="utf-8")
+    converter, chunker = init_docling()
+    all_records = []
 
-    def run(self):
-        pdf_files = sorted(self.raw_dir.rglob("*.pdf"))
-        if self.max_files is not None:
-            pdf_files = pdf_files[:self.max_files]
+    for pdf_file in pdf_files:
+        try:
+            logging.info(f"Đang phân tích file: {pdf_file.name}")
+            records = process_pdf(pdf_file, converter, chunker)
+            all_records.extend(records)
+        except Exception as e:
+            logging.error(f"Lỗi khi xử lý {pdf_file.name}: {e}")
+        finally:
+            gc.collect()
 
-        if not pdf_files:
-            raise FileNotFoundError(f"Không tìm thấy file PDF nào trong: {self.raw_dir}")
-
-        print(f"Tìm thấy {len(pdf_files)} file PDF cần xử lý.")
-        print(f"Embedding tokenizer: {self.embedding_model}")
-        print(f"Giới hạn mỗi chunk: {self.max_chunk_tokens} tokens")
-
-        all_records = []
-        file_reports = []
-
-        for pdf_file in pdf_files:
-            try:
-                records, report = self.process_pdf(pdf_file)
-                all_records.extend(records)
-                file_reports.append(report)
-            except Exception as error:
-                print(f"  Lỗi khi xử lý {pdf_file.name}: {error}")
-                file_reports.append({"source_file": pdf_file.name, "status": "failed", "error": str(error)})
-            finally:
-                gc.collect()
-
-        self.chunks_file.write_text(json.dumps(all_records, ensure_ascii=False, indent=2), encoding="utf-8")
-
-        summary = {
-            "embedding_model": self.embedding_model,
-            "max_chunk_tokens": self.max_chunk_tokens,
-            "ocr_enabled": self.enable_ocr,
-            "processed_file_count": len(pdf_files),
-            "successful_file_count": sum(r["status"] == "success" for r in file_reports),
-            "failed_file_count": sum(r["status"] == "failed" for r in file_reports),
-            "total_chunks": len(all_records),
-            "files": file_reports,
-        }
-
-        self.report_file.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
-        self.write_preview(all_records)
-
-        print("\nHoàn thành preprocess.")
-        print(f"Chunks: {self.chunks_file}")
-        print(f"Report: {self.report_file}")
-        print(f"Preview: {self.preview_file}")
+    output_file = CHUNKS_DIR / "chunks.json"
+    with open(output_file, "w", encoding="utf-8") as f:
+        json.dump(all_records, f, ensure_ascii=False, indent=2)
+        
+    logging.info(f"Hoàn tất! Đã lưu {len(all_records)} chunks vào {output_file}")
 
 if __name__ == "__main__":
-    processor = LegalDocumentPreprocessor()
-    processor.run()
+    run_preprocess()

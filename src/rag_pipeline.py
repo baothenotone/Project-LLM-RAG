@@ -1,72 +1,79 @@
+import logging
 import os
-import time
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+from retriever import load_retriever_resources, retrieve
 
-from citations import build_context, print_sources
-from retriever import HybridRetriever
+logging.basicConfig(level=logging.INFO, format="%(message)s")
+load_dotenv()
 
-class RAGPipeline:
-    def __init__(self):
-        load_dotenv()
-        self.api_key = os.getenv("GEMINI_API_KEY")
-        self.model_name = os.getenv("GEMINI_MODEL")
+def init_rag_system():
+    api_key = os.getenv("GEMINI_API_KEY")
+    model_name = os.getenv("GEMINI_MODEL")
+    
+    if not api_key or not model_name:
+        raise ValueError("Lỗi: Thiếu biến môi trường GEMINI_API_KEY hoặc GEMINI_MODEL.")
         
-        if not self.api_key or not self.model_name:
-            raise ValueError("Thiếu GEMINI_API_KEY hoặc GEMINI_MODEL trong file .env")
-            
-        self.client = genai.Client(api_key=self.api_key)
-        self.retriever = HybridRetriever()
+    client = genai.Client(api_key=api_key)
+    resources = load_retriever_resources()
+    
+    return client, model_name, resources
 
-    def _build_prompt(self, question, context):
-        return f"""Bạn là trợ lý hỏi đáp hỗ trợ tra cứu quy chế đào tạo.
-Chỉ sử dụng thông tin có trong phần TÀI LIỆU THAM KHẢO. Trả lời rõ ràng, tự nhiên bằng tiếng Việt.
-Trích dẫn nguồn theo định dạng [Nguồn n] ngay sau thông tin được lấy.
-Nếu không có thông tin, hãy nói: "Không tìm thấy thông tin phù hợp trong tài liệu."
+def build_context(results):
+    context_blocks = []
+    
+    for index, record in enumerate(results, start=1):
+        source_file = record.get("source_file", "Không rõ")
+        pages = record.get("pages", [])
+        page_str = ", ".join(map(str, pages)) if pages else "Không rõ"
+        content = record.get("embedding_text", "")
+        
+        block = f"[Nguồn {index}]\nTài liệu: {source_file}\nTrang: {page_str}\nNội dung:\n{content}"
+        context_blocks.append(block)
+        
+    return "\n\n".join(context_blocks)
 
-CÂU HỎI: {question}
+def ask(question, client, model_name, resources, top_k=5):
+    if not question.strip():
+        return {"answer": "Vui lòng nhập câu hỏi.", "sources": []}
+        
+    # Truy xuất tài liệu
+    results = retrieve(question, resources, top_k=top_k)
+    
+    if len(results) == 0:
+        return {"answer": "Không tìm thấy thông tin trong hệ thống tài liệu quy chế.", "sources": []}
+        
+    context = build_context(results)
+    
+    # Khởi tạo Prompt cho Gemini
+    prompt = f"""Bạn là trợ lý giải đáp thắc mắc về quy chế đào tạo đại học.
+Nhiệm vụ: Dựa vào thông tin ở phần TÀI LIỆU THAM KHẢO, hãy trả lời câu hỏi của người dùng.
+Quy tắc:
+1. KHÔNG bịaa đặt. Chỉ dùng thông tin được cung cấp.
+2. Viết câu trả lời rõ ràng, dễ hiểu.
+3. PHẢI trích dẫn nguồn ở định dạng [Nguồn n] ngay phía sau câu trả lời (VD: ...được quy định theo khoản 2 [Nguồn 1]).
+4. Nếu tài liệu không chứa đủ thông tin để trả lời, hãy nói: "Tài liệu hiện tại không đề cập chi tiết về vấn đề này."
+
+CÂU HỎI CỦA NGƯỜI DÙNG: {question}
 
 TÀI LIỆU THAM KHẢO:
 {context}
 
-CÂU TRẢ LỜI:"""
+TRẢ LỜI:"""
 
-    def generate_answer(self, question, context):
-        prompt = self._build_prompt(question, context)
-        try:
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=prompt,
-                config=types.GenerateContentConfig(temperature=0.1, max_output_tokens=512)
+    try:
+        response = client.models.generate_content(
+            model=model_name,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                temperature=0.1, 
+                max_output_tokens=1024
             )
-            return response.text.strip() if response.text else "Gemini không trả về nội dung."
-        except Exception as e:
-            return f"Lỗi gọi Gemini API: {e}"
-
-    def ask(self, question, top_k=5):
-        if not question.strip():
-            return {"answer": "Câu hỏi rỗng.", "sources": []}
-            
-        results = self.retriever.retrieve(question, top_k=top_k)
-        if not results:
-            return {"answer": "Không tìm thấy thông tin phù hợp trong tài liệu.", "sources": []}
-            
-        context = build_context(results)
-        answer = self.generate_answer(question, context)
+        )
+        answer = response.text.strip()
+    except Exception as e:
+        logging.error(f"Lỗi khi gọi Gemini: {e}")
+        answer = "Hệ thống AI đang bận hoặc gặp lỗi, vui lòng thử lại sau."
         
-        return {"answer": answer, "sources": results}
-
-if __name__ == "__main__":
-    print("Khởi động RAG Pipeline...")
-    pipeline = RAGPipeline()
-    print("Sẵn sàng! Nhập 'exit' để thoát.\n")
-    
-    while True:
-        q = input("Nhập câu hỏi: ")
-        if q.lower() in ['exit', 'quit']: break
-        
-        res = pipeline.ask(q)
-        print("\nCâu trả lời:\n", res["answer"])
-        print_sources(res["sources"])
-        print("-" * 50)
+    return {"answer": answer, "sources": results}
