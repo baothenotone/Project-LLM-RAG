@@ -1,106 +1,109 @@
-# Hệ thống hỏi–đáp quy chế đào tạo tiếng Việt sử dụng RAG
+# Hệ thống hỏi–đáp Quy chế Đào tạo HUSC sử dụng RAG
 
-Đây là hệ thống hỏi–đáp hỗ trợ tra cứu **quy chế đào tạo bằng tiếng Việt**. Hệ thống tìm các đoạn tài liệu liên quan đến câu hỏi, dùng Gemini để tạo câu trả lời ngắn gọn và hiển thị nguồn tham khảo theo tên tài liệu, số trang.
+Hệ thống hỏi–đáp giúp tra cứu **quy chế đào tạo đại học theo hệ thống tín chỉ** của Trường Đại học Khoa học, Đại học Huế (HUSC). Với mỗi câu hỏi, hệ thống truy xuất các đoạn quy chế liên quan, dùng Gemini để sinh câu trả lời ngắn gọn kèm trích dẫn nguồn theo tên tài liệu và số trang.
 
-Dự án được xây dựng ở mức **prototype** cho đề tài:
+Dự án ở mức **prototype**, phục vụ đề tài:
 
 > Xây dựng hệ thống hỏi–đáp hỗ trợ tra cứu quy chế đào tạo tiếng Việt sử dụng RAG có trích dẫn nguồn.
 
+Tài liệu đang được nạp trong dự án:
+
+- **Quyết định số 673/QĐ-ĐHKH** (22/09/2021) — Quy chế đào tạo đại học theo hệ thống tín chỉ của Trường Đại học Khoa học.
+- **Quyết định số 1453/QĐ-ĐHKH** (19/12/2025) — Sửa đổi một số điều của Quy chế đào tạo ban hành theo Quyết định 673/QĐ-ĐHKH.
+
 ## Chức năng chính
 
-- Đọc và phân tích tài liệu PDF bằng Docling.
-- Làm sạch văn bản, chia chunk và giữ metadata pháp lý như chương, mục, điều, khoản, điểm.
-- Tạo embedding bằng mô hình tiếng Việt `bkai-foundation-models/vietnamese-bi-encoder`.
-- Kết hợp Dense Search và BM25 bằng Reciprocal Rank Fusion (RRF).
-- Mở rộng truy vấn bằng Gemini để tăng khả năng tìm đúng khi người dùng diễn đạt khác tài liệu.
-- Sắp xếp lại kết quả bằng CrossEncoder.
-- Sinh câu trả lời chỉ dựa trên nội dung truy xuất được.
-- Trích dẫn theo dạng `[Nguồn n]`, kèm tên file và số trang.
-- Hỗ trợ giao diện Streamlit và chế độ hỏi–đáp trên terminal.
+- Đọc và phân tích PDF bằng Docling (giữ cấu trúc bảng biểu).
+- Làm sạch văn bản, chia chunk bằng `HybridChunker` và trích metadata pháp lý: chương, mục, điều, khoản, điểm, số hiệu văn bản.
+- Tạo embedding tiếng Việt bằng `bkai-foundation-models/vietnamese-bi-encoder`, lưu vào **FAISS** (`IndexFlatIP`).
+- Mở rộng câu hỏi bằng Gemini để tăng khả năng tìm đúng khi người dùng hỏi khác cách diễn đạt trong tài liệu.
+- Kết hợp Dense Search (FAISS) và BM25 bằng Reciprocal Rank Fusion (RRF), sau đó rerank bằng CrossEncoder.
+- Sinh câu trả lời chỉ dựa trên nội dung truy xuất được, trích dẫn theo dạng `[Nguồn n]` kèm tên file và số trang.
+- Giao diện hỏi–đáp trên Streamlit, có lưu lịch sử chat.
+- Script đánh giá tự động (`evaluate.py`) chấm PASS/FAIL trên bộ câu hỏi mẫu và xuất báo cáo JSON.
 
 ## Kiến trúc hệ thống
 
 ```mermaid
 flowchart TD
-    A["PDF trong data/raw"] --> B["Docling + HybridChunker"]
-    B --> C["Chunks và metadata nguồn"]
-    C --> D["Embedding tiếng Việt"]
-    C --> E["BM25"]
-    D --> F["Dense Search"]
-    E --> G["RRF + CrossEncoder"]
-    F --> G
-    G --> H["Gemini sinh câu trả lời"]
-    H --> I["Câu trả lời + trích dẫn nguồn"]
+    subgraph GD1["Giai đoạn 1 - Chuẩn bị dữ liệu"]
+        A["PDF trong data/raw/"] --> B["preprocess.py<br/>Docling + HybridChunker"]
+        B --> C["data/extracted/*.md<br/>data/chunks/chunks.json"]
+        C --> D["embeddings.py<br/>vietnamese-bi-encoder"]
+        D --> E["vector_store/faiss_index.bin<br/>vector_store/metadata.json"]
+    end
+
+    subgraph GD2["Giai đoạn 2 - Hỏi và đáp"]
+        F["Câu hỏi người dùng"] --> G["query_expansion.py<br/>Gemini mở rộng câu hỏi"]
+        G --> H["Dense Search - FAISS"]
+        G --> I["Sparse Search - BM25"]
+        H --> J["Reciprocal Rank Fusion"]
+        I --> J
+        J --> K["CrossEncoder Reranker"]
+        K --> L["citations.py<br/>Ghép context theo Nguồn n"]
+        L --> M["Gemini sinh câu trả lời"]
+        M --> N["app.py - Streamlit<br/>Câu trả lời kèm nguồn"]
+    end
+
+    E -. nạp bởi .-> H
 ```
-
-Luồng xử lý gồm hai giai đoạn:
-
-1. **Chuẩn bị dữ liệu:** PDF → trích xuất → làm sạch → chia chunk → tạo embedding → lưu vector và metadata.
-2. **Hỏi–đáp:** câu hỏi → mở rộng truy vấn → truy xuất lai → rerank → tạo context có nguồn → Gemini sinh câu trả lời.
-
-## Công nghệ sử dụng
-
-| Thành phần | Công nghệ |
-| --- | --- |
-| Ngôn ngữ | Python |
-| Đọc và phân tích PDF | Docling, PyMuPDF |
-| Chia chunk | Docling `HybridChunker` |
-| Embedding | `bkai-foundation-models/vietnamese-bi-encoder` |
-| Tìm kiếm ngữ nghĩa | NumPy, cosine similarity |
-| Tìm kiếm từ khóa | BM25 (`rank-bm25`) |
-| Hợp nhất kết quả | Reciprocal Rank Fusion |
-| Reranker | `cross-encoder/mmarco-mMiniLMv2-L12-H384-v1` |
-| Mô hình sinh câu trả lời | Google Gemini API |
-| Giao diện | Streamlit |
-
-> Lưu ý: phiên bản hiện tại lưu vector trực tiếp trong `embeddings.npy` và tìm kiếm bằng NumPy; chưa sử dụng FAISS trong luồng chạy chính.
 
 ## Cấu trúc thư mục
 
 ```text
 Project-LLM-RAG/
 ├── data/
-│   ├── raw/                    # Tài liệu PDF đầu vào
-│   ├── extracted/              # Văn bản Markdown do Docling trích xuất
-│   ├── chunks/
-│   │   ├── chunks.json         # Các chunk dùng để tạo embedding
-│   │   └── rejected_chunks.json
-│   └── reports/
-│       ├── chunks_preview.txt  # Bản xem nhanh các chunk
-│       └── preprocess_report.json
+│   ├── raw/                    # PDF gốc
+│   │   ├── 01_quy_che_dao_tao_husc_qd_673_2021.pdf
+│   │   └── qd_1453_dhkh.pdf
+│   ├── extracted/               # Markdown do Docling xuất ra (để xem nhanh)
+│   └── chunks/
+│       └── chunks.json          # Các chunk kèm metadata pháp lý
 ├── vector_store/
-│   ├── embeddings.npy         # Ma trận vector embedding
-│   ├── metadata.json          # Metadata tương ứng với từng vector
-│   ├── embeddings_preview.csv
-│   └── show_embedding.py
+│   ├── faiss_index.bin           # FAISS IndexFlatIP
+│   └── metadata.json              # Metadata tương ứng từng vector
 ├── src/
-│   ├── preprocess.py          # Trích xuất, làm sạch và chia chunk
-│   ├── embeddings.py          # Tạo embedding và metadata
-│   ├── query_expansion.py     # Mở rộng câu hỏi bằng Gemini
-│   ├── retriever.py           # Dense Search + BM25 + RRF + reranker
-│   ├── citations.py           # Chuẩn hóa và định dạng nguồn
-│   ├── rag_pipeline.py        # Truy xuất và sinh câu trả lời
-│   ├── app.py                 # Giao diện Streamlit
-│   └── ingest.py              # Bộ đọc PDF PyMuPDF phiên bản cơ bản
+│   ├── preprocess.py       # Đọc PDF, làm sạch, chia chunk, trích metadata pháp lý
+│   ├── embeddings.py       # Tạo embedding và build FAISS index
+│   ├── query_expansion.py   # Mở rộng câu hỏi bằng Gemini
+│   ├── retriever.py         # Dense (FAISS) + BM25 + RRF + CrossEncoder rerank
+│   ├── citations.py         # Chuẩn hoá và định dạng trích dẫn nguồn
+│   ├── rag_pipeline.py      # Kết nối retriever + Gemini để sinh câu trả lời
+│   ├── app.py                # Giao diện Streamlit
+│   └── evaluate.py           # Đánh giá tự động theo bộ câu hỏi mẫu
 ├── requirements.txt
 └── README.md
 ```
 
-`src/preprocess.py` là luồng tiền xử lý chính hiện tại. `src/ingest.py` là phiên bản đọc PDF cơ bản bằng PyMuPDF và không bắt buộc trong luồng Docling.
+## Công nghệ sử dụng
+
+| Thành phần | Công nghệ |
+| --- | --- |
+| Ngôn ngữ | Python 3.11 |
+| Đọc và phân tích PDF | Docling (`PyPdfiumDocumentBackend`, `TableFormerMode.ACCURATE` cho bảng) |
+| Chia chunk | Docling `HybridChunker`, giới hạn 256 token theo tokenizer của mô hình embedding |
+| Embedding | `bkai-foundation-models/vietnamese-bi-encoder` (768 chiều) |
+| Vector store | FAISS `IndexFlatIP` (tương đương cosine similarity vì vector đã normalize) |
+| Tìm kiếm từ khoá | BM25Okapi (`rank-bm25`) |
+| Hợp nhất kết quả | Reciprocal Rank Fusion (RRF) |
+| Reranker | `cross-encoder/mmarco-mMiniLMv2-L12-H384-v1` |
+| Mở rộng truy vấn & sinh câu trả lời | Google Gemini, qua SDK `google-genai` |
+| Giao diện | Streamlit |
+| Cấu hình | `python-dotenv` |
 
 ## Yêu cầu môi trường
 
-- Python 3.11 được khuyến nghị.
+- Python 3.11 (khuyến nghị).
 - Git.
-- Kết nối Internet trong lần đầu để tải các mô hình từ Hugging Face.
 - Gemini API key.
+- Kết nối Internet trong lần chạy đầu để tải mô hình từ Hugging Face.
 
 ## Cài đặt
 
 ### 1. Tải dự án
 
 ```bash
-git clone --branch bao-dev https://github.com/baothenotone/Project-LLM-RAG.git
+git clone https://github.com/baothenotone/Project-LLM-RAG.git
 cd Project-LLM-RAG
 ```
 
@@ -125,14 +128,16 @@ source .venv/bin/activate
 ```bash
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-python -m pip install docling transformers google-genai
+python -m pip install docling google-genai
 ```
 
-Ba gói ở lệnh cuối được mã nguồn hiện tại sử dụng trực tiếp nhưng chưa được khai báo trong `requirements.txt` của nhánh `bao-dev`.
+> **Lưu ý:** `requirements.txt` hiện chưa khớp hoàn toàn với mã nguồn trong `src/`:
+> - **Thiếu:** `docling` (dùng trong `preprocess.py`) và `google-genai` (dùng trong `query_expansion.py`, `rag_pipeline.py`) chưa được khai báo — cần cài thêm bằng lệnh ở trên. `transformers` cũng được `preprocess.py` import trực tiếp; gói này thường đã có sẵn vì là phụ thuộc của `sentence-transformers`, nhưng nên khai báo tường minh trong `requirements.txt` để tránh phụ thuộc ẩn.
+> - **Thừa:** `pymupdf`, `pandas`, `tqdm`, `jupyter`, `ipykernel` được khai báo nhưng không còn được import ở bất kỳ file nào trong `src/` hiện tại — có vẻ là phần còn lại từ giai đoạn dùng PyMuPDF/notebook để đọc PDF trước khi chuyển sang Docling.
 
 ## Cấu hình biến môi trường
 
-Tạo file `.env` tại thư mục gốc của dự án:
+Tạo file `.env` tại thư mục gốc dự án:
 
 ```env
 GEMINI_API_KEY=your_gemini_api_key
@@ -141,51 +146,51 @@ GEMINI_MODEL=your_available_gemini_model
 ENABLE_QUERY_EXPANSION=true
 ENABLE_RERANKER=true
 RERANKER_MODEL=cross-encoder/mmarco-mMiniLMv2-L12-H384-v1
-
-# Không bắt buộc, dùng để tăng giới hạn tải mô hình từ Hugging Face
-HF_TOKEN=your_hugging_face_token
 ```
 
-Trong đó:
+| Biến | Bắt buộc | Mặc định | Ý nghĩa |
+| --- | --- | --- | --- |
+| `GEMINI_API_KEY` | Có | — | Khoá truy cập Gemini API, dùng cho cả mở rộng truy vấn và sinh câu trả lời |
+| `GEMINI_MODEL` | Có | — | Tên model Gemini hiện có trong tài khoản |
+| `ENABLE_QUERY_EXPANSION` | Không | `true` | Bật/tắt việc dùng Gemini sinh thêm biến thể câu hỏi trước khi truy xuất |
+| `ENABLE_RERANKER` | Không | `true` | Bật/tắt bước rerank bằng CrossEncoder |
+| `RERANKER_MODEL` | Không | `cross-encoder/mmarco-mMiniLMv2-L12-H384-v1` | Model CrossEncoder dùng để rerank |
 
-- `GEMINI_API_KEY`: khóa truy cập Gemini API.
-- `GEMINI_MODEL`: tên model Gemini hiện có trong tài khoản của bạn.
-- `ENABLE_QUERY_EXPANSION`: bật hoặc tắt mở rộng truy vấn.
-- `ENABLE_RERANKER`: bật hoặc tắt CrossEncoder reranker.
-- `RERANKER_MODEL`: tên mô hình reranker.
-- `HF_TOKEN`: không bắt buộc; giúp hạn chế cảnh báo và tăng giới hạn tải từ Hugging Face.
+File `.env` đã nằm trong `.gitignore` nên không bị đưa lên Git. Nên chạy mọi lệnh bên dưới từ thư mục gốc dự án để các module tìm đúng file `.env`.
 
-File `.env` đã được khai báo trong `.gitignore`, vì vậy API key không được đưa lên GitHub.
+## Cách chạy hệ thống
 
-## Chạy nhanh với dữ liệu có sẵn
+Dự án đã có sẵn `data/chunks/chunks.json`, `vector_store/faiss_index.bin` và `vector_store/metadata.json`, nên có thể chạy ngay sau khi cài thư viện và tạo `.env`.
 
-Nhánh `bao-dev` đã chứa `chunks.json`, `embeddings.npy` và `metadata.json`. Sau khi cài thư viện và tạo `.env`, có thể chạy trực tiếp.
-
-### Chế độ terminal
-
-```bash
-python src/rag_pipeline.py
-```
-
-Nhập câu hỏi tiếng Việt. Nhập `exit` hoặc `quit` để kết thúc.
-
-### Giao diện Streamlit
+### Giao diện hỏi–đáp đầy đủ (Streamlit)
 
 ```bash
 python -m streamlit run src/app.py
 ```
 
-Sau khi khởi động, mở địa chỉ Streamlit hiển thị trên terminal, thông thường là `http://localhost:8501`.
+Đây là **cách duy nhất hiện có để hỏi–đáp đầy đủ** (truy xuất + Gemini sinh câu trả lời + trích dẫn nguồn). Sau khi khởi động, mở địa chỉ hiển thị trên terminal, thường là `http://localhost:8501`.
+
+### Kiểm tra riêng bước truy xuất (terminal)
+
+```bash
+python src/retriever.py
+```
+
+Script này chỉ chạy phần **truy xuất** (Dense Search + BM25 + RRF + rerank) và in ra các chunk liên quan cùng điểm số — **chưa gọi Gemini để sinh câu trả lời**. Hữu ích để kiểm tra riêng chất lượng tìm kiếm. Nhập `exit` để thoát.
+
+> `src/rag_pipeline.py` chỉ định nghĩa các hàm `init_rag_system()` và `ask()` để `app.py` và `evaluate.py` import lại; file này không có khối `if __name__ == "__main__":` nên chạy trực tiếp `python src/rag_pipeline.py` sẽ không có gì xảy ra trên terminal.
+
+### Đánh giá tự động
+
+```bash
+python src/evaluate.py
+```
+
+Chạy qua bộ câu hỏi mẫu định nghĩa sẵn trong file (gồm cả câu hỏi trong phạm vi tài liệu và ngoài phạm vi), đo thời gian phản hồi cho từng câu, in kết quả PASS/FAIL và lưu báo cáo chi tiết vào `data/reports/detailed_evaluation_report.json` (thư mục `data/reports/` được tạo tự động khi chạy).
 
 ## Xây dựng lại dữ liệu từ PDF
 
-Đặt các tài liệu PDF vào:
-
-```text
-data/raw/
-```
-
-Sau đó chạy lần lượt:
+Đặt tài liệu PDF vào `data/raw/`, sau đó chạy tuần tự:
 
 ### Bước 1: Tiền xử lý và chia chunk
 
@@ -193,76 +198,76 @@ Sau đó chạy lần lượt:
 python src/preprocess.py
 ```
 
-Kết quả chính:
+Kết quả: `data/extracted/*.md`, `data/chunks/chunks.json`.
 
-- `data/extracted/*.md`
-- `data/chunks/chunks.json`
-- `data/reports/chunks_preview.txt`
-- `data/reports/preprocess_report.json`
+`preprocess.py` sẽ:
 
-### Bước 2: Tạo embedding
+- Đọc PDF bằng Docling (không OCR, có phân tích cấu trúc bảng).
+- Chia văn bản thành chunk tối đa 256 token bằng `HybridChunker`, dùng tokenizer của `vietnamese-bi-encoder`.
+- Lọc bỏ chunk header/footer, chunk chỉ chứa số trang, chunk quá ngắn/rác, và chunk trùng lặp.
+- Trích các trường pháp lý (`chapter`, `section`, `article`, `clause`, `point`) và số hiệu văn bản (`document_number`) bằng regex.
+
+### Bước 2: Tạo embedding và FAISS index
 
 ```bash
 python src/embeddings.py
 ```
 
-Kết quả chính:
+Kết quả: `vector_store/faiss_index.bin`, `vector_store/metadata.json`.
 
-- `vector_store/embeddings.npy`
-- `vector_store/metadata.json`
-
-### Bước 3: Chạy hỏi–đáp
-
-```bash
-python src/rag_pipeline.py
-```
-
-hoặc:
+### Bước 3: Chạy lại hệ thống
 
 ```bash
 python -m streamlit run src/app.py
 ```
 
-> Nếu thay đổi mô hình embedding, phải chạy lại cả `preprocess.py` và `embeddings.py` để tokenizer, số chiều vector và metadata đồng bộ.
+> Nếu đổi mô hình embedding, cần chạy lại cả `preprocess.py` (vì tokenizer chia chunk cũng lấy từ mô hình embedding) và `embeddings.py` để số chiều vector và metadata đồng bộ.
 
-## Cách hệ thống truy xuất tài liệu
+## Cơ chế truy xuất (retriever.py)
 
-Với mỗi câu hỏi, `HybridRetriever` thực hiện:
+Với mỗi câu hỏi, hàm `retrieve()` thực hiện:
 
-1. Chuẩn hóa và tạo các biến thể truy vấn.
-2. Tạo embedding cho truy vấn.
-3. Tính điểm Dense Search với toàn bộ vector tài liệu.
-4. Tính điểm BM25 trên nội dung và tiêu đề chunk.
-5. Kết hợp hai bảng xếp hạng bằng RRF.
-6. Dùng CrossEncoder đánh giá lại các ứng viên.
-7. Trả về các chunk tốt nhất cùng metadata nguồn.
+1. Chuẩn hoá câu hỏi, gọi Gemini (nếu `ENABLE_QUERY_EXPANSION=true`) để sinh thêm tối đa 3 câu hỏi biến thể.
+2. Encode toàn bộ biến thể câu hỏi và tìm kiếm Dense Search trên FAISS (lấy `pool_size=50` ứng viên cho mỗi biến thể).
+3. Tính điểm BM25 trên văn bản gộp từ tiêu đề, heading và nội dung của từng chunk.
+4. Hợp nhất hai bảng xếp hạng bằng RRF (`rrf_k=60`), lấy 60 ứng viên tốt nhất.
+5. Nếu `ENABLE_RERANKER=true`: chấm điểm lại toàn bộ cặp (câu hỏi, chunk) bằng CrossEncoder, lấy điểm cao nhất giữa các biến thể câu hỏi cho mỗi chunk.
+6. Trả về `top_k` chunk (mặc định 5) kèm điểm số.
 
-`RAGPipeline` đánh số các chunk thành `[Nguồn 1]`, `[Nguồn 2]`, ... rồi yêu cầu Gemini chỉ trả lời dựa trên phần tài liệu tham khảo. Khi không có kết quả phù hợp, hệ thống trả về thông báo không tìm thấy thông tin trong tài liệu.
+`rag_pipeline.py` gộp các chunk trả về thành context đánh số `[Nguồn 1]`, `[Nguồn 2]`, ... (qua `citations.py`), yêu cầu Gemini chỉ trả lời dựa trên phần tài liệu này, trích dẫn nguồn ngay trong câu trả lời, và trả lời "Tài liệu hiện tại không đề cập chi tiết về vấn đề này." nếu không đủ thông tin.
 
-## Dữ liệu hiện có trên nhánh `bao-dev`
+## Dữ liệu hiện có
 
-- 1 tài liệu quy chế đào tạo PDF.
-- 140 chunk.
-- 140 vector embedding, mỗi vector có 768 chiều.
-- Metadata gồm tên file, trang, tiêu đề tài liệu, chương, mục, điều, khoản, điểm và nội dung chunk.
+| | |
+| --- | --- |
+| Số tài liệu PDF | 2 |
+| Tổng số chunk | 149 |
+| — từ `01_quy_che_dao_tao_husc_qd_673_2021.pdf` | 140 chunk |
+| — từ `qd_1453_dhkh.pdf` | 9 chunk |
+| Số vector trong FAISS | 149 (768 chiều/vector) |
 
-Các số liệu có thể thay đổi sau khi thêm tài liệu hoặc chạy lại bước tiền xử lý.
+Metadata mỗi chunk gồm: tên file, số trang, tiêu đề tài liệu, số hiệu văn bản (nếu nhận diện được), chương, mục, điều, khoản, điểm và nội dung chunk. Số liệu sẽ thay đổi nếu thêm/bớt tài liệu trong `data/raw/` và chạy lại bước tiền xử lý.
 
-## Một số câu hỏi thử nghiệm
+## Câu hỏi thử nghiệm
+
+Trích từ bộ test trong `src/evaluate.py`:
 
 - Tín chỉ là gì?
-- Sinh viên bị cảnh báo học tập trong trường hợp nào?
-- Sinh viên có được học cải thiện điểm không?
-- Điều kiện xét tốt nghiệp là gì?
-- Sinh viên được bảo lưu kết quả học tập trong trường hợp nào?
+- Sinh viên bị buộc thôi học trong những trường hợp nào?
+- Điều kiện để được xét làm đồ án, khóa luận tốt nghiệp là gì?
+- Sinh viên thi hộ thì bị xử lý kỷ luật như thế nào?
+- Một tiết học kéo dài bao nhiêu phút?
+- Thời gian làm bài thi tự luận đối với học phần 3 tín chỉ là bao lâu?
 
-## Lưu ý
+`evaluate.py` còn có 2 câu hỏi ngoài phạm vi tài liệu (ví dụ hỏi về đồ ăn trưa, lịch thi lại môn Triết học Mác–Lênin) để kiểm tra hệ thống có từ chối trả lời đúng cách hay không.
 
-- Lần chạy đầu tiên có thể chậm vì hệ thống phải tải embedding model và reranker.
-- Không commit file `.env` hoặc API key lên GitHub.
-- Chất lượng câu trả lời phụ thuộc vào text layer của PDF, cách chia chunk và dữ liệu đầu vào.
-- Hệ thống chỉ nên trả lời dựa trên nguồn đã truy xuất; cần kiểm tra lại tên tài liệu và số trang với các câu hỏi quan trọng.
-- Các notebook hiện chủ yếu đóng vai trò khung thử nghiệm theo từng giai đoạn.
+## Ghi chú kỹ thuật
+
+- Lần chạy đầu tiên sẽ chậm hơn vì phải tải mô hình embedding và reranker từ Hugging Face.
+- Không commit file `.env` hoặc API key lên Git.
+- Chất lượng câu trả lời phụ thuộc vào lớp text của PDF, cách chia chunk, và mức độ đầy đủ của tài liệu trong `data/raw/`.
+- Nên kiểm tra lại tên tài liệu và số trang được trích dẫn với các câu hỏi quan trọng trước khi sử dụng câu trả lời.
+- Xem mục "Cài đặt" ở trên để biết `requirements.txt` hiện còn thiếu/thừa gói nào so với `src/`.
 
 ## Nhóm thực hiện
 
@@ -271,4 +276,4 @@ Các số liệu có thể thay đổi sau khi thêm tài liệu hoặc chạy l
 
 ## Phạm vi dự án
 
-Đây là prototype phục vụ học tập và thử nghiệm RAG trên tài liệu quy chế đào tạo tiếng Việt, chưa phải hệ thống tư vấn học vụ chính thức.
+Đây là bản **prototype** phục vụ học tập và nghiên cứu về RAG trên tài liệu quy chế đào tạo tiếng Việt của Trường Đại học Khoa học, Đại học Huế, chưa phải hệ thống tư vấn học vụ chính thức.

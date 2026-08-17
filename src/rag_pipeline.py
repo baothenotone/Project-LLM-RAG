@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 from retriever import load_retriever_resources, retrieve
+from citations import build_context
 
 load_dotenv()
 
@@ -19,19 +20,6 @@ def init_rag_system():
     
     return client, model_name, resources
 
-def build_context(results):
-    context_blocks = []
-    
-    for index, record in enumerate(results, start=1):
-        source_file = record.get("source_file", "Không rõ")
-        pages = record.get("pages", [])
-        page_str = ", ".join(map(str, pages)) if pages else "Không rõ"
-        content = record.get("embedding_text", "")
-        
-        block = f"[Nguồn {index}]\nTài liệu: {source_file}\nTrang: {page_str}\nNội dung:\n{content}"
-        context_blocks.append(block)
-        
-    return "\n\n".join(context_blocks)
 
 def ask(question, client, model_name, resources, top_k=5):
     if not question.strip():
