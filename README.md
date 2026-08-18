@@ -35,31 +35,68 @@ Hệ thống có xử lý quan hệ giữa văn bản gốc và văn bản sửa
 ## Kiến trúc hệ thống
 
 ```mermaid
-flowchart TD
-    subgraph A["Giai đoạn 1 - Chuẩn bị dữ liệu"]
-        A1["PDF trong data/raw/"] --> A2["preprocess.py\nDocling + HybridChunker"]
-        A2 --> A3["data/extracted/*.md"]
-        A2 --> A4["data/chunks/chunks.json"]
-        A4 --> A5["embeddings.py\nVietnamese Bi-Encoder"]
-        A5 --> A6["FAISS Index + metadata.json"]
+flowchart LR
+
+    subgraph P1["① Chuẩn bị dữ liệu"]
+        direction TB
+
+        A["PDF<br/>data/raw/"]
+        B["preprocess.py<br/>Docling + HybridChunker"]
+        C["chunks.json"]
+        D["Markdown<br/>data/extracted/"]
+        E["embeddings.py<br/>Vietnamese Bi-Encoder"]
+        F[("FAISS Index<br/>+ metadata.json")]
+
+        A --> B
+        B --> C
+        B --> D
+        C --> E
+        E --> F
     end
 
-    subgraph B["Giai đoạn 2 - Hỏi đáp"]
-        B1["Câu hỏi người dùng"] --> B2["Dense Search - FAISS"]
-        B1 --> B3["BM25"]
-        B2 --> B4["RRF"]
-        B3 --> B4
-        B4 --> B5["Top candidate"]
-        B5 --> B6["Bổ sung văn bản sửa đổi nếu cần"]
-        B6 --> B7["CrossEncoder Reranker"]
-        B7 --> B8["Relevance Gate"]
-        B8 -->|"Không liên quan"| B9["Từ chối câu hỏi"]
-        B8 -->|"Có liên quan"| B10["citations.py\nTạo context + metadata pháp lý"]
-        B10 --> B11["Gemini"]
-        B11 --> B12["Câu trả lời + nguồn"]
+
+    subgraph P2["② Hỏi đáp RAG"]
+        direction TB
+
+        Q["Câu hỏi người dùng"]
+
+        DS["Dense Search<br/>FAISS"]
+        BM["BM25"]
+
+        RRF["Reciprocal Rank Fusion<br/>(RRF)"]
+
+        CAND["Top 20 candidates"]
+        AMEND["Bổ sung văn bản sửa đổi<br/>đang có hiệu lực"]
+        RERANK["CrossEncoder<br/>Reranker"]
+        GATE{"Relevance Gate"}
+
+        CTX["citations.py<br/>Context + metadata pháp lý"]
+        LLM["Gemini"]
+        ANS["Câu trả lời<br/>+ nguồn trích dẫn"]
+
+        REJECT["Không tìm thấy thông tin<br/>trong tài liệu"]
+
+        Q --> DS
+        Q --> BM
+
+        DS --> RRF
+        BM --> RRF
+
+        RRF --> CAND
+        CAND --> AMEND
+        AMEND --> RERANK
+        RERANK --> GATE
+
+        GATE -->|"Có liên quan"| CTX
+        GATE -->|"Không liên quan"| REJECT
+
+        CTX --> LLM
+        LLM --> ANS
     end
 
-    A6 -. "nạp bởi retriever" .-> B2
+
+    F -. "retriever.py nạp dữ liệu" .-> DS
+    F -. "metadata + nội dung" .-> BM
 ```
 
 ## Cấu trúc thư mục
