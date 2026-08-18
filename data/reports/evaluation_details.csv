@@ -1,0 +1,11 @@
+﻿question,type,rank,retrieval_ok,answer_ok,time_s,passed
+Tín chỉ là gì?,In-domain,1.0,True,True,31.4,True
+Sinh viên bị buộc thôi học trong những trường hợp nào?,In-domain,2.0,True,True,22.05,True
+Sinh viên thi hộ lần đầu bị xử lý như thế nào?,In-domain,1.0,True,True,31.11,True
+Thi tự luận học phần 3 tín chỉ kéo dài bao lâu?,In-domain,1.0,True,True,28.77,True
+Một ngày có bao nhiêu tiết học?,In-domain,1.0,True,True,27.26,True
+Tiết 13 học từ mấy giờ đến mấy giờ?,In-domain,1.0,True,True,26.33,True
+Xếp loại xuất sắc cần bao nhiêu điểm?,In-domain,1.0,True,True,25.49,True
+Trường có bán đồ ăn trưa cho sinh viên không?,OOD,,True,True,25.68,True
+Messi ghi bao nhiêu bàn thắng?,OOD,,True,True,23.59,True
+Thủ đô của Việt Nam là gì?,OOD,,True,True,23.05,True

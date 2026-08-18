@@ -1,0 +1,7 @@
+{
+  "Retrieval Hit@3": 1.0,
+  "MRR": 0.9285714285714286,
+  "Answer Keyword Accuracy": 1.0,
+  "OOD Accuracy": 1.0,
+  "Mean Latency (s)": 26.473000000000003
+}
