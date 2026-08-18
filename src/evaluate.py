@@ -75,13 +75,13 @@ TEST_CASES = [
         "answerable": False,
     },
     {
-        "question": "tiết 6",
+        "question": "xếp loại xuất sắc cần bao nhiêu điểm",
         "answerable": True,
-        "document": "1453/QĐ-ĐHKH",
+        "document": "673/QĐ-ĐHKH",
         "article": None,
         "keywords": [
-            "13 giờ 00",
-            "13 giờ 50",
+            "3.6",
+            "4.0",
         ],
     },
     {

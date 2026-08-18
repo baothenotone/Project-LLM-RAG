@@ -1,10 +1,10 @@
 {
   "summary": {
-    "retrieval_hit_at_3": 1.0,
-    "mrr": 0.9375,
-    "answer_accuracy": 1.0,
+    "retrieval_hit_at_3": 0.875,
+    "mrr": 0.8125,
+    "answer_accuracy": 0.875,
     "ood_accuracy": 1.0,
-    "average_time_seconds": 2.46
+    "average_time_seconds": 2.24
   },
   "details": [
     {
@@ -16,7 +16,7 @@
       "answer_ok": true,
       "top_score": -0.1575,
       "answer": "Tín chỉ là đơn vị quy chuẩn dùng để lượng hóa khối lượng học tập của sinh viên [Nguồn 1].\n\nMột tín chỉ được quy định bằng số giờ giảng theo từng hình thức tổ chức giảng dạy và học tập như sau:\n- Dạy lý thuyết: 15 giờ/tín chỉ.\n- Làm bài tập, thảo luận, thực hành, thí nghiệm, đồ án học phần: 30 giờ/tín chỉ.\n- Làm bài tập lớn, tiểu luận, thực tập thực tế: 45 giờ/tín chỉ.\n- Đồ án hoặc khóa luận tốt nghiệp: 60 giờ/tín chỉ.\n\nNgoài ra, để hoàn thành khối lượng kiến thức của một tín chỉ, sinh viên cần dành thêm ít nhất 30 giờ chuẩn bị cá nhân ngoài giờ lên lớp [Nguồn 1].",
-      "time_seconds": 2.83
+      "time_seconds": 2.93
     },
     {
       "test_id": 2,
@@ -27,7 +27,7 @@
       "answer_ok": true,
       "top_score": 3.002,
       "answer": "Sinh viên bị buộc thôi học nếu thuộc một trong các trường hợp sau:\n\n1. Có 3 lần cảnh báo kết quả học tập liên tiếp [Nguồn 2].\n2. Vượt quá thời gian tối đa được phép học tại Trường Đại học Khoa học quy định tại khoản 3 Điều 9 của Quy chế [Nguồn 2].\n3. Bị kỷ luật lần thứ hai vì lý do đi thi hộ, nhờ người thi hộ [Nguồn 2, Nguồn 3].\n4. Bị kỷ luật ở mức xóa tên khỏi danh sách sinh viên của Trường Đại học Khoa học [Nguồn 2].",
-      "time_seconds": 3.2
+      "time_seconds": 2.8
     },
     {
       "test_id": 3,
@@ -38,7 +38,7 @@
       "answer_ok": true,
       "top_score": 1.5001,
       "answer": "Sinh viên thi hộ hoặc nhờ người thi hộ lần đầu sẽ bị kỷ luật ở mức đình chỉ học tập 01 năm [Nguồn 1].",
-      "time_seconds": 1.97
+      "time_seconds": 2.09
     },
     {
       "test_id": 4,
@@ -49,7 +49,7 @@
       "answer_ok": true,
       "top_score": 0.4124,
       "answer": "Thời gian làm bài thi học phần theo hình thức viết tự luận đối với học phần có từ 03 tín chỉ trở lên là 120 phút [Nguồn 1].",
-      "time_seconds": 2.17
+      "time_seconds": 2.18
     },
     {
       "test_id": 5,
@@ -60,7 +60,7 @@
       "answer_ok": true,
       "top_score": 0.3503,
       "answer": "Mỗi ngày có 13 tiết học [Nguồn 1].",
-      "time_seconds": 2.49
+      "time_seconds": 2.58
     },
     {
       "test_id": 6,
@@ -71,7 +71,7 @@
       "answer_ok": true,
       "top_score": 4.4823,
       "answer": "Tiết 13 học từ 19 giờ 50 đến 20 giờ 40 [Nguồn 1].",
-      "time_seconds": 3.09
+      "time_seconds": 3.29
     },
     {
       "test_id": 7,
@@ -82,7 +82,7 @@
       "answer_ok": true,
       "top_score": null,
       "answer": "Không tìm thấy thông tin trong hệ thống tài liệu quy chế.",
-      "time_seconds": 1.44
+      "time_seconds": 1.12
     },
     {
       "test_id": 8,
@@ -93,18 +93,18 @@
       "answer_ok": true,
       "top_score": null,
       "answer": "Không tìm thấy thông tin trong hệ thống tài liệu quy chế.",
-      "time_seconds": 1.21
+      "time_seconds": 1.15
     },
     {
       "test_id": 9,
-      "question": "tiết 6",
-      "passed": true,
-      "source_rank": 1,
-      "retrieval_ok": true,
-      "answer_ok": true,
-      "top_score": -2.2795,
-      "answer": "Theo quy định hiện hành tại [Nguồn 1], thời gian của tiết 6 được quy định như sau:\n- Bắt đầu: 13 giờ 00 [Nguồn 1].\n- Kết thúc: 13 giờ 50 [Nguồn 1].\n- Thời gian dạy học: 50 phút [Nguồn 1].\n- Thời gian nghỉ: 5 phút [Nguồn 1].",
-      "time_seconds": 3.02
+      "question": "xếp loại xuất sắc cần bao nhiêu điểm",
+      "passed": false,
+      "source_rank": null,
+      "retrieval_ok": false,
+      "answer_ok": false,
+      "top_score": null,
+      "answer": "Không tìm thấy thông tin trong hệ thống tài liệu quy chế.",
+      "time_seconds": 1.07
     },
     {
       "test_id": 10,
@@ -114,8 +114,8 @@
       "retrieval_ok": true,
       "answer_ok": true,
       "top_score": -0.274,
-      "answer": "Theo quy định hiện hành tại [Nguồn 1], thời gian cho tiết 6 được quy định như sau:\n- Từ: 13 giờ 00 [Nguồn 1].\n- Đến: 13 giờ 50 [Nguồn 1].\n- Thời gian dạy học: 50 phút [Nguồn 1].\n- Thời gian nghỉ: 5 phút [Nguồn 1].",
-      "time_seconds": 3.18
+      "answer": "Theo quy định hiện hành tại [Nguồn 1], thời gian cho tiết 6 được quy định như sau:\n- Từ: 13 giờ 00.\n- Đến: 13 giờ 50.\n- Thời gian dạy học: 50 phút.\n- Thời gian nghỉ: 5 phút.",
+      "time_seconds": 3.14
     }
   ]
 }
