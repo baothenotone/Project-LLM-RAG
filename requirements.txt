@@ -1,20 +1,17 @@
 # PDF Processing
-pymupdf==1.26.4
+docling
+docling-core
+transformers
 
-# Data Processing
-pandas==2.3.1
-numpy==2.3.1
-tqdm==4.67.1
-
-# RAG
+# AI / Embedding
+google-genai
 sentence-transformers==5.0.0
+
+# Retrieval
+numpy==2.3.1
 faiss-cpu==1.11.0
-streamlit==1.46.1
 rank-bm25==0.2.2
 
-# Configuration
+# App
+streamlit==1.46.1
 python-dotenv==1.1.1
-
-# Notebook
-jupyter==1.1.1
-ipykernel==6.30.1

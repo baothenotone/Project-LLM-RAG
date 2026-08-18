@@ -1,156 +1,295 @@
 import json
-import logging
-import os
 import re
 import unicodedata
+from datetime import date
+from pathlib import Path
+
 import faiss
 import numpy as np
-from pathlib import Path
-from dotenv import load_dotenv
 from rank_bm25 import BM25Okapi
 from sentence_transformers import CrossEncoder, SentenceTransformer
 
-from query_expansion import expand_query
 
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+VECTOR_DIR = PROJECT_ROOT / "vector_store"
 
+EMBEDDING_MODEL = "bkai-foundation-models/vietnamese-bi-encoder"
+RERANKER_MODEL = "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"
+
+TOP_K = 5
+SEARCH_POOL_SIZE = 30
+RERANK_CANDIDATES = 20
+RRF_K = 60
+RELEVANCE_THRESHOLD = -2
+
+
+# Chuẩn hóa văn bản thành token cho BM25
+def tokenize(text):
+    text = unicodedata.normalize("NFC", str(text)).lower()
+    text = re.sub(r"[^\w]+", " ", text, flags=re.UNICODE)
+    return text.strip().split()
+
+
+# Kiểm tra truy vấn có khớp trực tiếp với tài liệu
+def has_exact_match(question, text):
+    query_tokens = tokenize(question)
+    text_tokens = set(tokenize(text))
+
+    return bool(query_tokens) and all(
+        token in text_tokens
+        for token in query_tokens
+    )
+
+
+# Kiểm tra văn bản sửa đổi đã có hiệu lực
+def is_active_amendment(item):
+    if item.get("document_type") != "quyet_dinh_sua_doi":
+        return False
+
+    try:
+        return (
+            date.fromisoformat(item.get("effective_date", ""))
+            <= date.today()
+        )
+    except ValueError:
+        return False
+
+
+# Thêm văn bản sửa đổi khi kết quả chứa Điều cũ
+def add_amendment_candidates(candidate_ids, metadata):
+    scopes = {
+        (
+            metadata[doc_id].get("document_number"),
+            metadata[doc_id].get("article"),
+        )
+        for doc_id in candidate_ids
+        if metadata[doc_id].get("document_number")
+        and metadata[doc_id].get("article")
+    }
+
+    result = list(candidate_ids)
+    seen = set(result)
+
+    for doc_id, item in enumerate(metadata):
+        target = (
+            item.get("amends_document"),
+            item.get("amends_article"),
+        )
+
+        if (
+            is_active_amendment(item)
+            and target in scopes
+            and doc_id not in seen
+        ):
+            result.append(doc_id)
+            seen.add(doc_id)
+
+    return result
+
+
+# Nạp FAISS, BM25 và các mô hình retrieval
 def load_retriever_resources():
-    root = Path(__file__).resolve().parent.parent
-    metadata_file = root / "vector_store" / "metadata.json"
-    faiss_file = root / "vector_store" / "faiss_index.bin"
-    
-    if not faiss_file.exists() or not metadata_file.exists():
-        raise FileNotFoundError("Chưa tìm thấy Database. Hãy chạy file embeddings.py trước.")
-        
-    # Đọc Metadata
-    with open(metadata_file, "r", encoding="utf-8") as f:
-        metadata = json.load(f)
-        
-    # Đọc FAISS Index
-    faiss_index = faiss.read_index(str(faiss_file))
-    
-    # Chuẩn bị dữ liệu cho BM25 (Từ khóa)
-    search_texts = []
-    tokenized_texts = []
-    
-    for item in metadata:
-        title = str(item.get("document_title") or "")
-        headings = str(item.get("headings") or "")
-        content = str(item.get("embedding_text") or "")
-        
-        # Gộp các trường lại thành một văn bản dài để tìm kiếm
-        full_text = f"{title}\n{headings}\n{content}".strip()
-        search_texts.append(full_text)
-        
-        # Tokenize văn bản cho BM25
-        normalized_text = unicodedata.normalize("NFC", full_text).lower()
-        cleaned_text = re.sub(r"[^\w]+", " ", normalized_text, flags=re.UNICODE).strip()
-        tokenized_texts.append(cleaned_text.split())
-        
-    bm25_model = BM25Okapi(tokenized_texts)
-    
-    # Load các Model AI
-    logging.info("Đang tải mô hình Bi-Encoder...")
-    embed_model = SentenceTransformer("bkai-foundation-models/vietnamese-bi-encoder")
-    
-    reranker_model = None
-    enable_reranker = os.getenv("ENABLE_RERANKER", "true").lower() in {"true", "1"}
-    if enable_reranker:
-        logging.info("Đang tải mô hình CrossEncoder (Reranker)...")
-        reranker_name = os.getenv("RERANKER_MODEL", "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1")
-        reranker_model = CrossEncoder(reranker_name)
-    
-    return metadata, faiss_index, search_texts, bm25_model, embed_model, reranker_model
+    metadata_file = VECTOR_DIR / "metadata.json"
+    faiss_file = VECTOR_DIR / "faiss_index.bin"
 
-def retrieve(question, resources, top_k=5, pool_size=50, rrf_k=60):
-    metadata, faiss_index, search_texts, bm25_model, embed_model, reranker_model = resources
-    
-    # 1. Mở rộng câu hỏi
+    if not metadata_file.exists() or not faiss_file.exists():
+        raise FileNotFoundError(
+            "Chưa tìm thấy Database. Hãy chạy embeddings.py trước."
+        )
+
+    with open(metadata_file, "r", encoding="utf-8") as file:
+        metadata = json.load(file)
+
+    faiss_index = faiss.read_index(str(faiss_file))
+
+    if faiss_index.ntotal != len(metadata):
+        raise ValueError(
+            "Số vector FAISS không khớp với metadata."
+        )
+
+    search_texts = []
+
+    for item in metadata:
+        title = item.get("document_title") or ""
+        headings = item.get("headings") or []
+        content = item.get("embedding_text") or ""
+
+        if isinstance(headings, list):
+            headings = "\n".join(headings)
+
+        search_texts.append(
+            f"{title}\n{headings}\n{content}".strip()
+        )
+
+    bm25 = BM25Okapi([
+        tokenize(text)
+        for text in search_texts
+    ])
+
+    embed_model = SentenceTransformer(
+        EMBEDDING_MODEL
+    )
+
+    reranker = CrossEncoder(
+        RERANKER_MODEL
+    )
+
+    return (
+        metadata,
+        faiss_index,
+        search_texts,
+        bm25,
+        embed_model,
+        reranker,
+    )
+
+
+# Gộp thứ hạng Dense và BM25 bằng RRF
+def reciprocal_rank_fusion(dense_ids, bm25_ids):
+    scores = {}
+
+    for ranked_ids in (dense_ids, bm25_ids):
+        for rank, doc_id in enumerate(ranked_ids, start=1):
+            doc_id = int(doc_id)
+
+            scores[doc_id] = (
+                scores.get(doc_id, 0)
+                + 1 / (RRF_K + rank)
+            )
+
+    return [
+        doc_id
+        for doc_id, _ in sorted(
+            scores.items(),
+            key=lambda item: item[1],
+            reverse=True,
+        )
+    ]
+
+
+# Truy xuất các chunk phù hợp nhất với câu hỏi
+def retrieve(question, resources, top_k=TOP_K):
+    (
+        metadata,
+        faiss_index,
+        search_texts,
+        bm25,
+        embed_model,
+        reranker,
+    ) = resources
+
     question = question.strip()
-    if len(question) > 0:
-        question = question[0].upper() + question[1:]
-    query_variants = expand_query(question)
-    
-    if not query_variants:
+
+    if not question:
         return []
 
-    # 2. DENSE SEARCH (Tìm theo Ngữ nghĩa qua FAISS)
-    q_embs = embed_model.encode(query_variants, convert_to_numpy=True, normalize_embeddings=True)
-    if q_embs.ndim == 1: 
-        q_embs = q_embs.reshape(1, -1)
-    
-    # D: Distance (Điểm số), I: Index (Vị trí tài liệu)
-    distances, indices = faiss_index.search(q_embs, pool_size)
-    
-    dense_scores_dict = {}
-    for q_idx in range(len(query_variants)):
-        for rank_idx, doc_id in enumerate(indices[q_idx]):
-            if doc_id >= 0: # Tránh trường hợp FAISS trả về -1 khi thiếu dữ liệu
-                score = distances[q_idx][rank_idx]
-                if doc_id not in dense_scores_dict or score > dense_scores_dict[doc_id]:
-                    dense_scores_dict[doc_id] = score
-                    
-    dense_ranked_indices = sorted(dense_scores_dict.keys(), key=lambda x: dense_scores_dict[x], reverse=True)[:pool_size]
+    pool_size = min(
+        SEARCH_POOL_SIZE,
+        len(metadata),
+    )
 
-    # 3. SPARSE SEARCH (Tìm theo Từ khóa qua BM25)
-    bm25_all_scores = []
-    for q in query_variants:
-        norm_q = unicodedata.normalize("NFC", q).lower()
-        clean_q = re.sub(r"[^\w]+", " ", norm_q).strip().split()
-        scores = bm25_model.get_scores(clean_q)
-        bm25_all_scores.append(scores)
-        
-    # Lấy điểm cao nhất của mỗi văn bản trong tất cả các query variant
-    bm25_max_scores = np.max(np.vstack(bm25_all_scores), axis=0)
-    bm25_ranked_indices = np.argsort(bm25_max_scores)[::-1][:pool_size]
+    # Dense Search
+    query_vector = embed_model.encode(
+        [question],
+        convert_to_numpy=True,
+        normalize_embeddings=True,
+    )
 
-    # 4. RECIPROCAL RANK FUSION (RRF - Hợp nhất kết quả)
-    fused_scores = {}
-    
-    for rank, doc_id in enumerate(dense_ranked_indices, start=1):
-        fused_scores[int(doc_id)] = fused_scores.get(int(doc_id), 0.0) + (1.0 / (rrf_k + rank))
-        
-    for rank, doc_id in enumerate(bm25_ranked_indices, start=1):
-        fused_scores[int(doc_id)] = fused_scores.get(int(doc_id), 0.0) + (1.0 / (rrf_k + rank))
-            
-    # Lấy top 60 ứng viên tốt nhất sau khi hợp nhất
-    sorted_fused_items = sorted(fused_scores.items(), key=lambda x: x[1], reverse=True)[:60]
-    candidate_indices = [item[0] for item in sorted_fused_items]
+    _, dense_ids = faiss_index.search(
+        query_vector,
+        pool_size,
+    )
 
-    # 5. RERANKER (Chấm điểm lại bằng CrossEncoder)
-    if reranker_model:
-        pairs = []
-        for doc_idx in candidate_indices:
-            for q in query_variants:
-                pairs.append((q, search_texts[doc_idx]))
-                
-        # Chấm điểm toàn bộ các cặp (Câu hỏi - Tài liệu)
-        rerank_scores = reranker_model.predict(pairs)
-        rerank_scores = rerank_scores.reshape(len(candidate_indices), len(query_variants))
-        
-        # Lấy điểm cao nhất cho mỗi tài liệu
-        best_rerank_scores = np.max(rerank_scores, axis=1)
-        
-        # --- ĐOẠN CODE ĐÃ SỬA LỖI ---
-        # Tạo Dictionary map giữa doc_id và điểm rerank tương ứng
-        rerank_dict = {doc_id: float(best_rerank_scores[i]) for i, doc_id in enumerate(candidate_indices)}
-        
-        # Sắp xếp lại danh sách dựa trên điểm số trong Dictionary
-        candidate_indices.sort(key=lambda doc_id: rerank_dict[doc_id], reverse=True)
-        final_scores = rerank_dict
-        # -----------------------------
-    else:
-        final_scores = {doc_id: float(fused_scores[doc_id]) for doc_id in candidate_indices}
+    dense_ids = [
+        doc_id
+        for doc_id in dense_ids[0]
+        if doc_id >= 0
+    ]
 
-    # 6. Trả về kết quả
+    # BM25 Search
+    bm25_scores = bm25.get_scores(
+        tokenize(question)
+    )
+
+    bm25_ids = np.argsort(
+        bm25_scores
+    )[::-1][:pool_size]
+
+    # RRF
+    candidate_ids = reciprocal_rank_fusion(
+        dense_ids,
+        bm25_ids,
+    )[:RERANK_CANDIDATES]
+
+    candidate_ids = add_amendment_candidates(
+        candidate_ids,
+        metadata,
+    )
+
+    if not candidate_ids:
+        return []
+
+    # CrossEncoder rerank
+    pairs = [
+        (
+            question,
+            search_texts[doc_id],
+        )
+        for doc_id in candidate_ids
+    ]
+
+    scores = reranker.predict(pairs)
+
+    final_scores = {
+        doc_id: float(score)
+        for doc_id, score in zip(
+            candidate_ids,
+            scores,
+        )
+    }
+
+    candidate_ids.sort(
+        key=lambda doc_id: final_scores[doc_id],
+        reverse=True,
+    )
+
+    # Relevance gate
+    top_score = final_scores[candidate_ids[0]]
+
+    exact_matches = [
+        doc_id
+        for doc_id in candidate_ids
+        if has_exact_match(
+            question,
+            search_texts[doc_id],
+        )
+    ]
+
+    if (
+        top_score < RELEVANCE_THRESHOLD
+        and not exact_matches
+    ):
+        return []
+
+    # Ưu tiên exact match cho truy vấn ngắn
+    if exact_matches:
+        candidate_ids.sort(
+            key=lambda doc_id: (
+                doc_id not in exact_matches,
+                -final_scores[doc_id],
+            )
+        )
+
     results = []
-    for doc_id in candidate_indices[:top_k]:
+
+    for doc_id in candidate_ids[:top_k]:
         item = metadata[doc_id].copy()
         item["score"] = final_scores[doc_id]
         results.append(item)
-        
+
     return results
 
+# In kết quả retrieval ra terminal
 def print_results(results):
     if not results:
         print("Không tìm thấy kết quả phù hợp.")
@@ -159,39 +298,36 @@ def print_results(results):
     for rank, item in enumerate(results, start=1):
         content = (
             item.get("content")
-            or item.get("text")
             or item.get("embedding_text")
             or ""
-        )
-
-        source_file = (
-            item.get("source_file")
-            or item.get("file_name")
-            or "Không xác định"
-        )
-
-        pages = (
-            item.get("pages")
-            or item.get("page")
-            or "Không xác định"
         )
 
         print("\n" + "=" * 80)
         print("TOP:", rank)
         print("Score:", f"{item.get('score', 0):.4f}")
-        print("File:", source_file)
-        print("Trang:", pages)
+        print(
+            "Văn bản:",
+            item.get("document_number") or "Không xác định",
+        )
+        print(
+            "Điều:",
+            item.get("article") or "Không xác định",
+        )
+        print(
+            "Trang:",
+            item.get("pages") or "Không xác định",
+        )
         print("Chunk ID:", item.get("chunk_id", ""))
         print("Nội dung:")
         print(content)
 
 
-# Chạy thử hệ thống truy xuất.
+# Chạy thử retriever trên terminal
+
 def main():
     try:
-        print("Đang nạp dữ liệu và các mô hình AI (FAISS, BM25, CrossEncoder)...")
-        # Khởi tạo và nạp toàn bộ tài nguyên cần thiết cho retriever
-        resources = load_retriever_resources() 
+        resources = load_retriever_resources()
+
     except Exception as error:
         print("Không thể khởi tạo hệ thống:")
         print(error)
@@ -205,30 +341,24 @@ def main():
             question = input("Nhập câu hỏi: ").strip()
 
             if question.lower() == "exit":
-                print("Đã kết thúc.")
                 break
 
             if not question:
                 print("Câu hỏi không được để trống.\n")
                 continue
 
-            # Truyền thêm tham số resources vào hàm retrieve
             results = retrieve(
-                question=question,
-                resources=resources, 
-                top_k=5,
+                question,
+                resources,
             )
 
             print_results(results)
-            print()
 
         except KeyboardInterrupt:
-            print("\nĐã kết thúc.")
             break
 
         except Exception as error:
             print("Lỗi khi truy xuất:", error)
-            print()
 
 
 if __name__ == "__main__":
