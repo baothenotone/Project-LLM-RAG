@@ -1,4 +1,5 @@
 import re
+from pathlib import Path
 
 import streamlit as st
 
@@ -7,9 +8,15 @@ from rag_pipeline import ask, init_rag_system
 
 
 st.set_page_config(
-    page_title="RAG - Quy chế Đào tạo",
+    page_title="Trợ lý Quy chế Đào tạo HUSC",
+    page_icon="🎓",
     layout="wide",
 )
+
+
+# Đường dẫn logo
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+LOGO_PATH = PROJECT_ROOT / "logo.png"
 
 
 # Tải hệ thống RAG một lần
@@ -64,9 +71,46 @@ def show_sources(answer, sources):
             )
 
 
-st.title(
-    "📚 Trợ lý Tra cứu Quy chế Đào tạo HUSC"
+# ==========================================================
+# LOGO + TÊN TRƯỜNG
+# ==========================================================
+
+logo_col, title_col = st.columns(
+    [1, 8],
+    vertical_alignment="center",
 )
+
+with logo_col:
+    if LOGO_PATH.exists():
+        st.image(
+            str(LOGO_PATH),
+            width=100,
+        )
+    else:
+        st.markdown("### 🎓 HUSC")
+
+
+with title_col:
+    st.markdown(
+        "### TRƯỜNG ĐẠI HỌC KHOA HỌC, ĐẠI HỌC HUẾ"
+    )
+
+    st.title(
+        "📚 Trợ lý Tra cứu Quy chế Đào tạo"
+    )
+
+    st.caption(
+        "Hỗ trợ sinh viên tra cứu thông tin "
+        "trong Quy chế đào tạo của Nhà trường."
+    )
+
+
+st.divider()
+
+
+# ==========================================================
+# KHỞI TẠO HỆ THỐNG RAG
+# ==========================================================
 
 client, model_name, resources = load_system()
 
@@ -95,12 +139,19 @@ for message in st.session_state.messages:
             )
 
 
+# ==========================================================
+# Ô NHẬP CÂU HỎI
+# ==========================================================
+
 user_question = st.chat_input(
     "Nhập câu hỏi về quy chế đào tạo..."
 )
 
 
-# Xử lý câu hỏi mới
+# ==========================================================
+# XỬ LÝ CÂU HỎI
+# ==========================================================
+
 if user_question:
     st.session_state.messages.append(
         {
